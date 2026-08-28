@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Issue #{{ issue.id }} - CampusSync{% endblock %}
+
+{% block content %}
+<h2>Manage Issue (#{{ issue.id }})</h2>
+
+<p><strong>Problem:</strong> {{ issue.problem }}</p>
+<p><strong>Category:</strong> {{ issue.category }}</p>
+<p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
+<p><strong>Room Number:</strong> {{ issue.room_number }}</p>
+<p><strong>Description:</strong> {{ issue.description or 'No description provided.' }}</p>
+<p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
+<p><strong>Status:</strong> <strong>{{ issue.status }}</strong></p>
+<p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+<p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'N/A' }}</p>
+
+<hr>
+
+<h3>Actions</h3>
+
+{% if issue.status == 'Assigned' %}
+    <form method="post" action="{{ url_for('routes.staff_issue_action', issue_id=issue.id) }}">
+        <input type="hidden" name="action" value="acknowledge">
+        <button type="submit">Acknowledge Issue (Set to In Progress)</button>
+    </form>
+{% elif issue.status == 'In Progress' %}
+    <form method="post" action="{{ url_for('routes.staff_issue_action', issue_id=issue.id) }}">
+        <input type="hidden" name="action" value="resolve">
+        <button type="submit">Mark as Resolved</button>
+    </form>
+{% elif issue.status == 'Resolved' %}
+    <p><em>This issue has been resolved and closed. No further workflow actions are available.</em></p>
+{% else %}
+    <p><em>No workflow actions available for status '{{ issue.status }}'.</em></p>
+{% endif %}
+
+<p><br><a href="{{ url_for('routes.staff_dashboard') }}">Back to Staff Dashboard</a></p>
+{% endblock %}

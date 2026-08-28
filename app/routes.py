@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, g, redirect, url_for, request, flash, abort
 from app import db
-from app.models import Issue
+from app.models import Issue, Assignment
 from app.auth import role_required
-from app.services import get_department_for_category, assign_issue_to_staff
+from app.services import get_department_for_category, assign_issue_to_staff, update_issue_status_by_staff
 
 bp = Blueprint('routes', __name__)
 
@@ -19,7 +19,7 @@ def index():
         if g.user.role == 'faculty':
             return redirect(url_for('routes.faculty_dashboard'))
         elif g.user.role == 'staff':
-            return redirect(url_for('routes.staff_placeholder'))
+            return redirect(url_for('routes.staff_dashboard'))
         elif g.user.role == 'management':
             return redirect(url_for('routes.management_placeholder'))
     return redirect(url_for('auth.login'))
@@ -92,8 +92,36 @@ def faculty_issue_detail(issue_id):
 
 @bp.route('/staff')
 @role_required('staff')
-def staff_placeholder():
-    return render_template('staff/placeholder.html')
+def staff_dashboard():
+    assignments = Assignment.query.filter_by(staff_id=g.user.id).all()
+    assigned_issue_ids = [a.issue_id for a in assignments]
+    issues = Issue.query.filter(Issue.id.in_(assigned_issue_ids)).order_by(Issue.created_at.desc()).all() if assigned_issue_ids else []
+    return render_template('staff/dashboard.html', issues=issues)
+
+@bp.route('/staff/issue/<int:issue_id>')
+@role_required('staff')
+def staff_issue_detail(issue_id):
+    issue = db.session.get(Issue, issue_id)
+    if not issue or not issue.assignment or issue.assignment.staff_id != g.user.id:
+        abort(404)
+    return render_template('staff/detail.html', issue=issue)
+
+@bp.route('/staff/issue/<int:issue_id>/action', methods=['POST'])
+@role_required('staff')
+def staff_issue_action(issue_id):
+    issue = db.session.get(Issue, issue_id)
+    if not issue or not issue.assignment or issue.assignment.staff_id != g.user.id:
+        abort(404)
+
+    action = request.form.get('action')
+    success, message = update_issue_status_by_staff(issue, action, g.user)
+
+    if success:
+        flash(message, 'success')
+    else:
+        flash(message, 'danger')
+
+    return redirect(url_for('routes.staff_issue_detail', issue_id=issue.id))
 
 @bp.route('/management')
 @role_required('management')

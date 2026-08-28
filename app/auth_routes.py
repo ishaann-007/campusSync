@@ -10,7 +10,7 @@ def login():
         if g.user.role == 'faculty':
             return redirect(url_for('routes.faculty_dashboard'))
         elif g.user.role == 'staff':
-            return redirect(url_for('routes.staff_placeholder'))
+            return redirect(url_for('routes.staff_dashboard'))
         elif g.user.role == 'management':
             return redirect(url_for('routes.management_placeholder'))
 
@@ -30,7 +30,7 @@ def login():
             if user.role == 'faculty':
                 return redirect(url_for('routes.faculty_dashboard'))
             elif user.role == 'staff':
-                return redirect(url_for('routes.staff_placeholder'))
+                return redirect(url_for('routes.staff_dashboard'))
             elif user.role == 'management':
                 return redirect(url_for('routes.management_placeholder'))
             return redirect(url_for('auth.login'))

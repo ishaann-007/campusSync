@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard - CampusSync{% endblock %}
+
+{% block content %}
+<h2>Staff Dashboard</h2>
+<p>Welcome, {{ g.user.name }}! (Department: {{ g.user.department.name if g.user.department else 'N/A' }})</p>
+
+<h3>Your Assigned Issues</h3>
+
+{% if issues %}
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Problem</th>
+                <th>Room Number</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Submitted By</th>
+                <th>Assigned At</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues %}
+            <tr>
+                <td>#{{ issue.id }}</td>
+                <td>{{ issue.problem }}</td>
+                <td>{{ issue.room_number }}</td>
+                <td>{{ issue.category }}</td>
+                <td>{{ issue.status }}</td>
+                <td>{{ issue.submitter.name }}</td>
+                <td>{{ issue.assignment.assigned_at.strftime('%Y-%m-%d %H:%M') if issue.assignment else 'N/A' }}</td>
+                <td><a href="{{ url_for('routes.staff_issue_detail', issue_id=issue.id) }}">Manage Issue</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>You currently have no issues assigned to you.</p>
+{% endif %}
+
+{% endblock %}

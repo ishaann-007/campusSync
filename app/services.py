@@ -1,3 +1,4 @@
+from datetime import datetime
 from app import db
 from app.models import Department, User, Issue, Assignment
 
@@ -65,4 +66,37 @@ def assign_issue_to_staff(issue):
     db.session.commit()
 
     return assignment
+
+def update_issue_status_by_staff(issue, action, staff_user):
+    """
+    Handles staff status transitions with validation and security checks.
+    Actions supported:
+    - 'acknowledge': Transition from 'Assigned' -> 'In Progress'
+    - 'resolve': Transition from 'In Progress' -> 'Resolved' (sets resolved_at)
+
+    Returns (success: bool, message: str)
+    """
+    if not issue or not staff_user or staff_user.role != 'staff':
+        return False, "Unauthorized access."
+
+    if not issue.assignment or issue.assignment.staff_id != staff_user.id:
+        return False, "Unauthorized: Issue is not assigned to you."
+
+    if action == 'acknowledge':
+        if issue.status != 'Assigned':
+            return False, f"Cannot acknowledge issue with status '{issue.status}'."
+        issue.status = 'In Progress'
+        db.session.commit()
+        return True, "Issue acknowledged and marked as In Progress."
+
+    elif action == 'resolve':
+        if issue.status != 'In Progress':
+            return False, f"Cannot resolve issue with status '{issue.status}'."
+        issue.status = 'Resolved'
+        issue.resolved_at = datetime.utcnow()
+        db.session.commit()
+        return True, "Issue resolved successfully."
+
+    return False, "Invalid action."
+
 

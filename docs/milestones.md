@@ -244,7 +244,8 @@ Equal workloads are resolved by alphabetical Staff name.
 
 # Milestone 6 --- Staff Issue Workflow
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
+
 
 ### Goal
 
@@ -508,7 +509,7 @@ Do not sacrifice the core workflow to add optional features.
 [██████████] Milestone 3 — Issue Submission     ✅
 [██████████] Milestone 4 — Routing              ✅
 [██████████] Milestone 5 — Assignment           ✅
-[----------] Milestone 6 — Staff Workflow       ⬜
+[██████████] Milestone 6 — Staff Workflow       ✅
 [----------] Milestone 7 — Management           ⬜
 [----------] Milestone 8 — Integration Testing  ⬜
 [----------] Milestone 9 — UI Polish            ⬜
