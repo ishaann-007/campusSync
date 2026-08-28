@@ -1,119 +1,78 @@
 # CampusSync
 
-**A centralized coordination platform for academic institutions.**
+CampusSync is a centralized coordination platform for academic
+institutions. It turns faculty-reported operational issues into a
+structured workflow: an issue is routed to the appropriate department,
+automatically assigned to an eligible staff member based on active
+workload, worked on, and resolved.
 
-CampusSync helps faculty report operational issues, automatically routes them to the appropriate department, assigns them to a staff member based on current workload, and provides management with visibility into ongoing work.
-
-> **Built for BuildSprint 2026**
-
----
+Built for **BuildSprint 2026**.
 
 ## The Problem
 
-Academic institutions often rely on multiple communication channels to handle everyday operational issues — messages, calls, emails, and verbal requests.
+Operational issues can be scattered across informal communication
+channels, making it difficult to determine where an issue belongs, who
+is responsible, whether work has started, and whether it has been
+resolved.
 
-This creates unnecessary coordination overhead.
+CampusSync provides a single workflow for reporting, routing,
+assignment, tracking, and institutional oversight.
 
-A simple issue such as a broken classroom projector can involve several people before reaching the person responsible for fixing it. There may also be no clear way to track who is handling the issue or whether it has been resolved.
-
-**CampusSync turns this fragmented process into a single, structured, and trackable workflow.**
-
----
-
-## How It Works
-
-```text
-Faculty
-   │
-   │ Submit Issue
-   ▼
-CampusSync
-   │
-   ├── Identify Category
-   │
-   ├── Route to Department
-   │
-   └── Assign Staff by Workload
-   │
-   ▼
-Department Staff
-   │
-   │ Handle & Update
-   ▼
-Resolved
-   │
-   ▼
-Management Visibility
-```
-
-### Example
-
-A faculty member reports:
-
-> **"Projector not working in Room 204."**
-
-The faculty member selects **IT / Equipment** as the category.
-
-CampusSync then:
-
-1. Routes the issue to the **IT Department**.
-2. Identifies eligible staff in that department.
-3. Compares their active workloads.
-4. Assigns the issue to the staff member with the lowest active workload.
-5. Allows the issue to be tracked until resolution.
-
----
-
-## Core Features
+## Core MVP
 
 ### Faculty
 
-* Submit operational issues
-* Select an issue category
-* Provide problem details
-* Provide the room number
-* Track submitted issues
+-   Log in with a pre-created account.
+-   Submit an issue with problem, description, room number, and
+    category.
+-   View and track submitted issues.
+-   View routing and assignment information.
 
-### Department Staff
+### Staff
 
-* Receive automatically assigned issues
-* View assigned issue details
-* Update issue status
-* Resolve assigned issues
+-   Log in with a pre-created account.
+-   View issues assigned to them.
+-   View issue details.
+-   Acknowledge assigned issues.
+-   Mark in-progress issues as resolved.
 
 ### Management
 
-* View issues across departments
-* Monitor issue statuses
-* See responsible departments and staff
-* Monitor unresolved requests
+-   View institution-wide issues.
+-   View status, department, and assigned staff.
+-   View status summary counts.
+-   Filter by status, department, and category.
+-   View issue details.
+-   Management is read-only for the MVP workflow.
 
-### Automatic Routing & Assignment
+## Issue Routing
 
-CampusSync uses predefined deterministic rules to route issues from their selected category to the responsible department.
+  Category                 Department
+  ------------------------ -------------------------
+  IT / Equipment           IT Department
+  Facilities / Classroom   Facilities Department
+  Academic / Schedule      Academic Administration
+  Miscellaneous            General Administration
 
-Once routed, the issue is automatically assigned to a staff member in that department based on active workload.
+Routing is deterministic: each category maps to one responsible
+department.
 
-> **Goal:** reduce manual coordination and give every issue clear ownership.
+## Automatic Staff Assignment
 
----
+Only Staff belonging to the responsible department are eligible.
 
-## Issue Categories
+Active workload is the number of assigned issues with status `Assigned`
+or `In Progress`. Resolved issues do not count.
 
-| Category                   | Department              |
-| :------------------------- | :---------------------- |
-| **IT / Equipment**         | IT Department           |
-| **Facilities / Classroom** | Facilities Department   |
-| **Academic / Schedule**    | Academic Administration |
-| **Miscellaneous**          | General Administration  |
+The eligible Staff member with the lowest active workload is selected.
+Equal workloads are resolved by alphabetical Staff name.
 
-Faculty members select the category. The responsible department is determined automatically by CampusSync.
-
----
+If no eligible Staff member exists, no Assignment is created and the
+Issue remains `Submitted`.
 
 ## Issue Lifecycle
 
-```text
+``` text
 Submitted
     ↓
 Assigned
@@ -123,216 +82,159 @@ In Progress
 Resolved
 ```
 
-Each issue has a defined status throughout its lifecycle.
+The MVP uses forward-only transitions:
 
-When an issue is resolved, CampusSync records the resolution timestamp.
+-   `Submitted → Assigned` after successful automatic assignment
+-   `Assigned → In Progress` when Staff acknowledges
+-   `In Progress → Resolved` when Staff resolves
 
----
+`resolved_at` records the resolution time. Resolved issues cannot be
+reopened.
 
-## User Roles
+## Technology Stack
 
-| Role                 | Purpose                            |
-| :------------------- | :--------------------------------- |
-| **Faculty**          | Submit and track issues            |
-| **Department Staff** | Handle and resolve assigned issues |
-| **Management**       | Monitor issues across departments  |
-
----
-
-## Data Model
-
-The MVP currently uses four core data objects:
-
-```text
-User
-Department
-Issue
-Assignment
-```
-
-### User
-
-Represents people who interact with CampusSync.
-
-Users have one of three roles:
-
-* Faculty
-* Staff
-* Management
-
-Staff members are associated with an operational department.
-
-### Department
-
-Represents the departments responsible for handling issues.
-
-The initial departments correspond to the four issue categories.
-
-### Issue
-
-Represents an operational problem submitted by Faculty.
-
-An issue contains:
-
-* Problem
-* Description
-* Room number
-* Category
-* Submitting Faculty member
-* Responsible Department
-* Status
-* Submission timestamp
-* Resolution timestamp
-
-### Assignment
-
-Represents the current Staff member responsible for an issue.
-
-For the MVP, each issue has one current assignment.
-
-Staff workload is determined from their active assigned issues rather than stored as a separate workload value.
-
----
-
-## MVP
-
-The initial version focuses on the core coordination workflow:
-
-* [x] Project concept & workflow
-* [x] Three user roles
-* [x] Four issue categories
-* [x] Department routing rules
-* [x] Core data model
-* [x] Technology stack
-* [ ] User authentication
-* [ ] Faculty issue submission
-* [ ] Automatic department routing
-* [ ] Automatic staff assignment
-* [ ] Issue status tracking
-* [ ] Staff interface
-* [ ] Management interface
-* [ ] End-to-end workflow testing
-* [ ] UI polish
-
-> The checklist reflects the current development stage and will be updated as CampusSync is built.
-
----
-
-## Tech Stack
-
-CampusSync uses a lightweight web stack selected for the 48-hour hackathon:
-
-| Layer     | Technology                |
-| :-------- | :------------------------ |
-| Backend   | **Python + Flask**        |
-| Database  | **SQLite**                |
-| Templates | **Jinja2**                |
-| Frontend  | **HTML, CSS, JavaScript** |
-
-The architecture intentionally avoids a separate frontend framework or unnecessary infrastructure so that the team can focus on the core MVP.
-
----
+  Layer             Technology
+  ----------------- --------------------------------------------
+  Backend           Python + Flask
+  ORM               Flask-SQLAlchemy
+  Database          SQLite
+  Templates         Jinja2
+  Frontend          HTML, CSS, JavaScript
+  Authentication    Flask sessions + Werkzeug password hashing
+  Version control   Git + GitHub
 
 ## Project Structure
 
-The repository currently contains:
-
-```text
+``` text
 CampusSync/
+├── app/
+│   ├── __init__.py
+│   ├── auth.py
+│   ├── auth_routes.py
+│   ├── models.py
+│   ├── routes.py
+│   ├── services.py
+│   ├── templates/
+│   └── static/
 ├── docs/
-│   ├── research.md
-│   └── architecture.md
-├── README.md
-└── ...
+├── instance/
+├── tests/
+├── requirements.txt
+├── run.py
+├── seed.py
+└── README.md
 ```
 
-### Documentation
+## Setup
 
-* `docs/research.md` — product definition, requirements, scope, and major product decisions.
-* `docs/architecture.md` — technical architecture and implementation decisions.
+### 1. Clone the repository
 
-The project structure will evolve as development progresses.
-
----
-
-## Development Approach
-
-CampusSync is being developed as a 48-hour hackathon MVP.
-
-Development will proceed incrementally:
-
-```text
-Application Setup
-       ↓
-Database & Data Model
-       ↓
-Authentication & Roles
-       ↓
-Faculty Issue Submission
-       ↓
-Department Routing
-       ↓
-Automatic Staff Assignment
-       ↓
-Staff Workflow
-       ↓
-Management Visibility
-       ↓
-End-to-End Testing
-       ↓
-UI Polish & Demo
+``` bash
+git clone <repository-url>
+cd CampusSync
 ```
 
-The priority is a reliable end-to-end workflow rather than a large number of additional features.
+Replace `<repository-url>` with the actual repository URL.
 
----
+### 2. Create a virtual environment
 
-## Roadmap
+Windows:
 
-### Phase 1 — Core MVP
+``` bash
+python -m venv venv
+venv\Scripts\activate
+```
 
-* Authentication
-* Role-based access
-* Issue submission
-* Department routing
-* Automatic staff assignment
-* Issue status tracking
-* Staff workflow
-* Management visibility
+macOS/Linux:
 
-### Phase 2 — Post-MVP Improvements
+``` bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-Potential improvements may include:
+### 3. Install dependencies
 
-* Notifications
-* More detailed reporting
-* Improved workload balancing
-* Additional operational insights
+``` bash
+pip install -r requirements.txt
+```
 
-### Future
+### 4. Seed the development database
 
-Further features will only be considered after the core MVP is working reliably.
+``` bash
+python seed.py
+```
 
----
+This creates the pre-defined development/demo users and departments used
+by the MVP.
 
-## Why CampusSync?
+### 5. Run the application
 
-CampusSync focuses on a simple institutional problem:
+``` bash
+python run.py
+```
 
-> **Getting the right issue to the right department and the right person without unnecessary coordination.**
+Then open:
 
-Instead of relying on scattered conversations, every request becomes a structured and trackable workflow with clear ownership.
+``` text
+http://127.0.0.1:5000/
+```
 
----
+### 6. Run tests
 
-## Status
+``` bash
+python -m unittest discover -s tests
+```
 
-🚧 **In Development**
+## Demo Accounts
 
-CampusSync is being developed during **BuildSprint 2026** as a 48-hour hackathon project.
+Users are pre-created for the MVP rather than registered publicly.
 
----
+The exact credentials should be documented from the current `seed.py`;
+do not guess or substitute credentials.
 
-## License
+  Role         Email           Password
+  ------------ --------------- ---------------
+  Faculty      See `seed.py`   See `seed.py`
+  Staff        See `seed.py`   See `seed.py`
+  Management   See `seed.py`   See `seed.py`
 
-License information will be added after the project is finalized.
+## Deliberate MVP Limitations
+
+The current MVP intentionally excludes:
+
+-   Manual Staff selection
+-   Manual reassignment
+-   Assignment history
+-   Staff comments or chat
+-   Escalation/reassignment for urgent unacknowledged issues
+-   Issue reopening
+-   Issue editing after submission
+-   Issue deletion
+-   Notification infrastructure
+-   Advanced analytics
+-   AI-based routing
+-   Separate mobile application
+-   Complex workforce optimization
+-   ERP/institutional-system integration
+
+These are deliberate scope boundaries, not requirements of the current
+MVP.
+
+## Testing
+
+The test suite covers authentication, issue submission, routing,
+automatic assignment, Staff workflow, Management visibility/filtering,
+ordering, access restrictions, and end-to-end integration.
+
+Run:
+
+``` bash
+python -m unittest discover -s tests
+```
+
+## Current Status
+
+**MVP implementation complete through Milestone 9.**
+
+The project is in final preparation: documentation verification, final
+testing, and demonstration preparation.
