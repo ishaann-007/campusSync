@@ -304,19 +304,233 @@ This sequence may be adjusted if technical decisions require it.
 
 ---
 
-## 13. Current Development Status
+## 13. Data Model
+
+The MVP currently uses four core data objects:
+
+* **User**
+* **Department**
+* **Issue**
+* **Assignment**
+
+The data model is intentionally limited to these objects to keep the MVP simple and achievable within the 48-hour hackathon.
+
+### 13.1 User
+
+Represents every person who interacts with CampusSync.
+
+```text
+User
+├── user_id
+├── name
+├── email
+├── password
+├── role
+└── department_id
+```
+
+#### Roles
+
+The MVP contains exactly three roles:
+
+* Faculty
+* Staff
+* Management
+
+`department_id` is primarily relevant to Staff and identifies the operational department they belong to. This determines which department's issues they are eligible to handle.
+
+Faculty and Management do not require an operational department association for the MVP.
+
+Management receives institution-wide visibility through its role rather than belonging to a separate "Management Department."
+
+### 13.2 Department
+
+Represents an operational department responsible for handling issues.
+
+```text
+Department
+├── department_id
+└── name
+```
+
+The initial departments are:
+
+1. IT Department
+2. Facilities Department
+3. Academic Administration
+4. General Administration
+
+The category-to-department mapping remains predefined application logic rather than a separate data object.
+
+### 13.3 Issue
+
+Represents an operational problem submitted by Faculty.
+
+```text
+Issue
+├── issue_id
+├── problem
+├── description
+├── room_number
+├── category
+├── submitted_by
+├── department_id
+├── status
+├── created_at
+└── resolved_at
+```
+
+#### Faculty-provided information
+
+* `problem` — short summary of the issue
+* `description` — additional details about the problem
+* `room_number` — location where the issue is occurring
+* `category` — one of the four predefined issue categories
+
+Faculty members select the category but do not select the responsible department.
+
+#### System-generated information
+
+* `issue_id` — unique identifier
+* `submitted_by` — identifies the Faculty user who submitted the issue
+* `department_id` — stores the department determined by routing logic
+* `status` — tracks the issue lifecycle
+* `created_at` — records when the issue was submitted
+* `resolved_at` — records when the issue was marked resolved
+
+Completion is represented by `status = Resolved`. A separate completion flag is not required.
+
+### 13.4 Assignment
+
+Represents the current Staff member responsible for an Issue.
+
+```text
+Assignment
+├── assignment_id
+├── issue_id
+├── staff_id
+└── assigned_at
+```
+
+The MVP uses **one current Assignment per Issue**.
+
+Assignment history and reassignment history are outside the initial MVP scope.
+
+The Assignment connects an Issue to a Staff user. Staff workload is calculated from their active assigned issues rather than stored as a separate value.
+
+### 13.5 Data Relationships
+
+The core relationships are:
+
+```text
+User (Faculty)
+      │
+      │ submits
+      ▼
+    Issue
+      │
+      │ routed to
+      ▼
+ Department
+      │
+      │ contains eligible Staff
+      ▼
+User (Staff)
+
+Issue
+  │
+  │ has one current Assignment
+  ▼
+Assignment
+  │
+  │ assigned to
+  ▼
+User (Staff)
+```
+
+The overall workflow is:
+
+```text
+Faculty submits Issue
+        ↓
+Faculty selects Category
+        ↓
+Routing Logic determines Department
+        ↓
+Eligible Staff are identified from that Department
+        ↓
+Active workloads are compared
+        ↓
+Lowest-workload Staff member is selected
+        ↓
+Current Assignment is created
+        ↓
+Staff manages the Issue
+        ↓
+Issue becomes Resolved
+```
+
+### 13.6 Assignment and Routing — Implementation To Be Defined
+
+The product-level decisions have been established, but the technical implementation has intentionally not been finalized yet.
+
+The following decisions will be documented after the technical design is discussed:
+
+* How category-to-department routing will be represented in the application
+* How routing logic will be separated from data models
+* How eligible Staff will be identified
+* How active workload will be calculated
+* How workload ties will be resolved
+* How the current Assignment will be created
+* What happens if no eligible Staff member is available
+* Exact status transition behavior
+* How these rules will be represented in the technical architecture
+
+These are **implementation and architecture decisions**, not additional product requirements.
+
+---
+
+## 14. Current Development Status
 
 The project is currently in the **planning and design stage**.
 
-The product concept, MVP scope, technology stack, routing strategy, staff assignment strategy, issue lifecycle, and general UI direction have been established.
+The product concept, MVP scope, technology stack, routing strategy, staff assignment strategy, issue lifecycle, UI direction, and core data model have been established.
 
-The next major design task is to define the **data model and database structure**.
+The next stage is to make the remaining technical decisions needed to describe how the agreed product will actually be implemented.
 
-Detailed technical architecture, including application structure, database relationships, routes, and internal components, will be documented in:
+Detailed technical architecture, including application structure, database relationships, routes, internal components, and implementation-level workflows, will be documented separately in:
 
 `docs/architecture.md`
 
-once those decisions have been finalized.
+That document should be updated as technical decisions are finalized rather than being treated as a fixed specification before implementation decisions are made.
+
+---
+
+## 15. Repository Documentation
+
+Current repository structure:
+
+```text
+CampusSync/
+├── docs/
+│   └── research.md
+└── README.md
+```
+
+Planned documentation:
+
+```text
+CampusSync/
+├── docs/
+│   ├── research.md
+│   └── architecture.md
+├── README.md
+└── ...
+```
+
+`research.md` defines the product problem, solution, users, workflow, MVP scope, and major product decisions.
+
+`architecture.md` will describe the actual technical implementation and architecture after those decisions have been finalized.
 
 ---
 
