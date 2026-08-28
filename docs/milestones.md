@@ -350,7 +350,8 @@ Issue details drawer/sidebar.
 
 # Milestone 8 --- End-to-End Integration Testing
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
+
 
 ### Goal
 
@@ -512,7 +513,7 @@ Do not sacrifice the core workflow to add optional features.
 [██████████] Milestone 5 — Assignment           ✅
 [██████████] Milestone 6 — Staff Workflow       ✅
 [██████████] Milestone 7 — Management           ✅
-[----------] Milestone 8 — Integration Testing  ⬜
+[██████████] Milestone 8 — Integration Testing  ✅
 [----------] Milestone 9 — UI Polish            ⬜
 [----------] Milestone 10 — Demo Preparation    ⬜
 ```
