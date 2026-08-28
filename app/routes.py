@@ -4,6 +4,8 @@ from app.models import Issue, Assignment, Department
 from app.auth import role_required
 from app.services import get_department_for_category, assign_issue_to_staff, update_issue_status_by_staff, get_management_dashboard_data
 
+from sqlalchemy import case
+
 bp = Blueprint('routes', __name__)
 
 CATEGORIES = [
@@ -27,7 +29,10 @@ def index():
 @bp.route('/faculty')
 @role_required('faculty')
 def faculty_dashboard():
-    issues = Issue.query.filter_by(submitted_by=g.user.id).order_by(Issue.created_at.desc()).all()
+    # Order issues: active (Submitted, Assigned, In Progress) first, resolved last.
+    # Within each group, order by created_at descending.
+    is_resolved = case((Issue.status == 'Resolved', 1), else_=0)
+    issues = Issue.query.filter_by(submitted_by=g.user.id).order_by(is_resolved.asc(), Issue.created_at.desc()).all()
     selected_issue_id = request.args.get('issue_id', type=int)
     selected_issue = None
     if selected_issue_id:
@@ -95,7 +100,11 @@ def faculty_issue_detail(issue_id):
 def staff_dashboard():
     assignments = Assignment.query.filter_by(staff_id=g.user.id).all()
     assigned_issue_ids = [a.issue_id for a in assignments]
-    issues = Issue.query.filter(Issue.id.in_(assigned_issue_ids)).order_by(Issue.created_at.desc()).all() if assigned_issue_ids else []
+    if assigned_issue_ids:
+        is_resolved = case((Issue.status == 'Resolved', 1), else_=0)
+        issues = Issue.query.filter(Issue.id.in_(assigned_issue_ids)).order_by(is_resolved.asc(), Issue.created_at.desc()).all()
+    else:
+        issues = []
     return render_template('staff/dashboard.html', issues=issues)
 
 @bp.route('/staff/issue/<int:issue_id>')

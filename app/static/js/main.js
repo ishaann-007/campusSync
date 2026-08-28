@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!themeToggleBtn) return;
         const currentTheme = document.documentElement.getAttribute('data-theme');
         if (currentTheme === 'dark') {
-            themeToggleBtn.innerHTML = '<span>☀️ Light</span>';
-            themeToggleBtn.setAttribute('aria-label', 'Switch to light mode');
+            themeToggleBtn.innerHTML = '<span>🌙 Dark Mode</span>';
+            themeToggleBtn.setAttribute('aria-label', 'Current theme: dark. Click to switch theme.');
         } else {
-            themeToggleBtn.innerHTML = '<span>🌙 Dark</span>';
-            themeToggleBtn.setAttribute('aria-label', 'Switch to dark mode');
+            themeToggleBtn.innerHTML = '<span>☀️ Light Mode</span>';
+            themeToggleBtn.setAttribute('aria-label', 'Current theme: light. Click to switch theme.');
         }
     }
 });

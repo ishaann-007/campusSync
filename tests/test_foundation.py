@@ -18,7 +18,7 @@ class BasicFoundationTestCase(unittest.TestCase):
     def test_index_route(self):
         response = self.client.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Login', response.data)
+        self.assertIn(b'Email Address', response.data)
 
 
 if __name__ == '__main__':

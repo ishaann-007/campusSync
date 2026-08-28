@@ -5,16 +5,16 @@
 {% block content %}
 <div class="page-header">
     <div>
-        <h2>Faculty Dashboard</h2>
-        <p class="page-subtitle">Track and manage operational requests submitted across campus.</p>
+        <h2>Faculty Request Tracker</h2>
+        <p class="page-subtitle">Track operational issues and classroom maintenance requests submitted across campus.</p>
     </div>
     <a href="{{ url_for('routes.faculty_submit_issue') }}" class="btn btn-primary">+ Submit New Issue</a>
 </div>
 
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3>Your Issues</h3>
-        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">{{ issues|length }} total</span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3>Submitted Requests</h3>
+        <span class="text-muted" style="font-size: 0.825rem; font-weight: 500;">{{ issues|length }} total</span>
     </div>
 
     {% if issues %}
@@ -28,11 +28,11 @@
                         <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
                     </div>
                     <div class="issue-item-meta">
-                        <span>{{ issue.department.name if issue.department else 'Unassigned Department' }}</span>
-                        <span>·</span>
-                        <span>{{ issue.room_number }}</span>
-                        <span>·</span>
                         <span>{{ issue.category }}</span>
+                        <span>·</span>
+                        <span>Room {{ issue.room_number }}</span>
+                        <span>·</span>
+                        <span>{{ issue.department.name if issue.department else 'Unassigned Department' }}</span>
                     </div>
                     <div class="issue-item-submeta">
                         Submitted {{ issue.created_at.strftime('%d %b %Y · %H:%M') }}
@@ -47,7 +47,7 @@
     {% else %}
         <div class="empty-state">
             <p>You have not submitted any issues yet.</p>
-            <a href="{{ url_for('routes.faculty_submit_issue') }}" class="btn btn-primary" style="margin-top: 0.75rem;">Submit First Issue</a>
+            <a href="{{ url_for('routes.faculty_submit_issue') }}" class="btn btn-primary" style="margin-top: 0.85rem;">Submit First Issue</a>
         </div>
     {% endif %}
 </div>

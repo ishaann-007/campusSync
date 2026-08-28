@@ -59,7 +59,7 @@ class AuthTestCase(unittest.TestCase):
         # Logout
         response = self.logout()
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Login', response.data)
+        self.assertIn(b'Email Address', response.data)
 
     def test_invalid_login(self):
         response = self.login('faculty@test.com', 'wrongpassword')

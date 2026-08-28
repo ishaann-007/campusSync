@@ -4,32 +4,32 @@
 
 {% block content %}
 <div style="max-width: 780px; margin: 0 auto;">
-    <div style="margin-bottom: 1rem;">
+    <div style="margin-bottom: 1.25rem;">
         <a href="{{ url_for('routes.staff_dashboard') }}" class="btn-link">← Back to Work Queue</a>
     </div>
 
     <div class="detail-container">
         <div class="detail-header">
             <div>
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">#{{ issue.id }} · {{ issue.category }}</span>
-                <h2 style="margin-top: 0.2rem; margin-bottom: 0;">{{ issue.problem }}</h2>
+                <span class="text-muted" style="font-size: 0.8rem; font-weight: 500;">Issue #{{ issue.id }}</span>
+                <h2 style="margin-top: 0.15rem; margin-bottom: 0;">{{ issue.problem }}</h2>
             </div>
             <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
         </div>
 
         <div class="detail-section">
             <h4>Issue</h4>
-            <div style="font-size: 0.95rem; color: var(--text-primary); font-weight: 500; margin-bottom: 0.25rem;">
+            <div style="font-size: 0.925rem; color: var(--text-primary); font-weight: 500; margin-bottom: 0.2rem;">
                 {{ issue.problem }}
             </div>
-            <div style="font-size: 0.875rem; color: var(--text-muted);">
-                Room {{ issue.room_number }}
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Room {{ issue.room_number }} · {{ issue.category }}
             </div>
         </div>
 
         <div class="detail-section">
             <h4>Description</h4>
-            <div style="background: var(--elevated-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem;">
+            <div style="background: var(--elevated-bg); padding: 0.85rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.875rem;">
                 {{ issue.description or 'No additional description provided.' }}
             </div>
         </div>
@@ -76,12 +76,12 @@
                     <button type="submit" class="btn btn-primary" style="background-color: #15803d;">Mark as Resolved</button>
                 </form>
             {% elif issue.status == 'Resolved' %}
-                <p style="font-size: 0.875rem; color: var(--text-muted);">
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
                     Issue resolved {{ issue.resolved_at.strftime('%d %b %Y · %H:%M') if issue.resolved_at else '' }}<br>
                     <em>No further actions available.</em>
                 </p>
             {% else %}
-                <p style="font-size: 0.875rem; color: var(--text-muted);"><em>No workflow actions available for status '{{ issue.status }}'.</em></p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);"><em>No workflow actions available for status '{{ issue.status }}'.</em></p>
             {% endif %}
         </div>
     </div>

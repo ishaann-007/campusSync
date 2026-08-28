@@ -1,48 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}Staff Dashboard - CampusSync{% endblock %}
+{% block title %}Work Queue - Staff - CampusSync{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div>
-        <h2>Staff Dashboard</h2>
-        <p class="page-subtitle">Assigned issues for <strong>{{ g.user.department.name if g.user.department else 'Unassigned Department' }}</strong> requiring action.</p>
+        <h2>Operational Work Queue</h2>
+        <p class="page-subtitle">Assigned issues requiring department action · <strong>{{ g.user.department.name if g.user.department else 'Unassigned Department' }}</strong></p>
     </div>
 </div>
 
 <div class="card">
-    <h3>Your Assigned Issues</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3>Assigned Work</h3>
+        <span class="text-muted" style="font-size: 0.825rem; font-weight: 500;">{{ issues|length }} assigned</span>
+    </div>
 
     {% if issues %}
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Problem</th>
-                        <th>Room</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th>Submitted By</th>
-                        <th>Assigned At</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for issue in issues %}
-                    <tr>
-                        <td class="text-muted">#{{ issue.id }}</td>
-                        <td><strong>{{ issue.problem }}</strong></td>
-                        <td>{{ issue.room_number }}</td>
-                        <td class="text-muted">{{ issue.category }}</td>
-                        <td><span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span></td>
-                        <td>{{ issue.submitter.name }}</td>
-                        <td class="text-muted">{{ issue.assignment.assigned_at.strftime('%d %b %Y · %H:%M') if issue.assignment else 'N/A' }}</td>
-                        <td><a href="{{ url_for('routes.staff_issue_detail', issue_id=issue.id) }}" class="btn btn-secondary btn-sm">Manage Issue</a></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="issue-list">
+            {% for issue in issues %}
+            <div class="issue-item">
+                <div class="issue-item-main">
+                    <div class="issue-item-header">
+                        <span class="issue-id">#{{ issue.id }}</span>
+                        <h4 class="issue-title">{{ issue.problem }}</h4>
+                        <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
+                    </div>
+                    <div class="issue-item-meta">
+                        <span>Room {{ issue.room_number }}</span>
+                        <span>·</span>
+                        <span>{{ issue.category }}</span>
+                        <span>·</span>
+                        <span>Submitted by {{ issue.submitter.name }}</span>
+                    </div>
+                    <div class="issue-item-submeta">
+                        Assigned {{ issue.assignment.assigned_at.strftime('%d %b %Y · %H:%M') if issue.assignment else 'N/A' }}
+                    </div>
+                </div>
+                <div class="issue-item-action">
+                    <a href="{{ url_for('routes.staff_issue_detail', issue_id=issue.id) }}" class="btn btn-secondary btn-sm">Manage Issue →</a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     {% else %}
         <div class="empty-state">

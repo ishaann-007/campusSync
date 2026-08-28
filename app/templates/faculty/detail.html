@@ -4,42 +4,49 @@
 
 {% block content %}
 <div style="max-width: 780px; margin: 0 auto;">
-    <div style="margin-bottom: 1rem;">
+    <div style="margin-bottom: 1.25rem;">
         <a href="{{ url_for('routes.faculty_dashboard') }}" class="btn-link">← Back to Issues</a>
     </div>
 
     <div class="detail-container">
         <div class="detail-header">
             <div>
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">#{{ issue.id }} · {{ issue.category }}</span>
-                <h2 style="margin-top: 0.2rem; margin-bottom: 0;">{{ issue.problem }}</h2>
+                <span class="text-muted" style="font-size: 0.8rem; font-weight: 500;">Issue #{{ issue.id }}</span>
+                <h2 style="margin-top: 0.15rem; margin-bottom: 0;">{{ issue.problem }}</h2>
             </div>
             <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
         </div>
 
         <div class="detail-section">
             <h4>Problem</h4>
-            <div style="font-size: 0.95rem; color: var(--text-primary); font-weight: 500; margin-bottom: 0.5rem;">
+            <div style="font-size: 0.925rem; color: var(--text-primary); font-weight: 500;">
                 {{ issue.problem }}
             </div>
         </div>
 
         <div class="detail-section">
-            <h4>Location</h4>
-            <div style="font-size: 0.9rem; color: var(--text-primary);">
-                {{ issue.room_number }}
+            <h4>Location & Classification</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="label">Room / Location</div>
+                    <div class="value">{{ issue.room_number }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Category</div>
+                    <div class="value">{{ issue.category }}</div>
+                </div>
             </div>
         </div>
 
         <div class="detail-section">
             <h4>Description</h4>
-            <div style="background: var(--elevated-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem;">
+            <div style="background: var(--elevated-bg); padding: 0.85rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.875rem;">
                 {{ issue.description or 'No additional description provided.' }}
             </div>
         </div>
 
         <div class="detail-section">
-            <h4>Routing</h4>
+            <h4>Routing & Assignment</h4>
             <div class="detail-grid">
                 <div class="detail-item">
                     <div class="label">Assigned Department</div>

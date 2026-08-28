@@ -4,22 +4,22 @@
 
 {% block content %}
 <div style="max-width: 780px; margin: 0 auto;">
-    <div style="margin-bottom: 1rem;">
+    <div style="margin-bottom: 1.25rem;">
         <a href="{{ url_for('routes.management_dashboard') }}" class="btn-link">← Back to Dashboard</a>
     </div>
 
     <div class="detail-container">
         <div class="detail-header">
             <div>
-                <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">#{{ issue.id }} · {{ issue.category }}</span>
-                <h2 style="margin-top: 0.2rem; margin-bottom: 0;">{{ issue.problem }}</h2>
+                <span class="text-muted" style="font-size: 0.8rem; font-weight: 500;">Issue #{{ issue.id }}</span>
+                <h2 style="margin-top: 0.15rem; margin-bottom: 0;">{{ issue.problem }}</h2>
             </div>
             <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
         </div>
 
         <div class="detail-section">
             <h4>Problem Description</h4>
-            <div style="background: var(--elevated-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem;">
+            <div style="background: var(--elevated-bg); padding: 0.85rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.875rem;">
                 {{ issue.description or 'No additional description provided.' }}
             </div>
         </div>
