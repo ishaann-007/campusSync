@@ -3,13 +3,17 @@
 {% block title %}Submit Operational Issue - CampusSync{% endblock %}
 
 {% block content %}
-<div style="max-width: 600px; margin: 0 auto;">
+<div class="form-container">
     <div class="card">
-        <h2>Submit Operational Issue</h2>
+        <div style="margin-bottom: 1.5rem;">
+            <h2>Submit Operational Issue</h2>
+            <p class="page-subtitle">Provide issue details below. The request will automatically be routed to the appropriate department.</p>
+        </div>
+
         <form method="post" action="{{ url_for('routes.faculty_submit_issue') }}">
             <div class="form-group">
                 <label for="problem">Problem Title *</label>
-                <input type="text" id="problem" name="problem" class="form-control" value="{{ problem or '' }}" placeholder="e.g., Projector not working" required>
+                <input type="text" id="problem" name="problem" class="form-control" value="{{ problem or '' }}" placeholder="e.g. Projector not working" required>
             </div>
             
             <div class="form-group">
@@ -24,15 +28,15 @@
 
             <div class="form-group">
                 <label for="room_number">Room Number *</label>
-                <input type="text" id="room_number" name="room_number" class="form-control" value="{{ room_number or '' }}" placeholder="e.g., Room 204" required>
+                <input type="text" id="room_number" name="room_number" class="form-control" value="{{ room_number or '' }}" placeholder="e.g. Room 204" required>
             </div>
 
             <div class="form-group">
                 <label for="description">Description (Optional)</label>
-                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Provide additional details about the issue...">{{ description or '' }}</textarea>
+                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Provide additional details or context..."></textarea>
             </div>
 
-            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.75rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                 <button type="submit" class="btn btn-primary">Submit Issue</button>
                 <a href="{{ url_for('routes.faculty_dashboard') }}" class="btn btn-secondary">Cancel</a>
             </div>

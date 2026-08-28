@@ -3,38 +3,75 @@
 {% block title %}Management - Issue Details #{{ issue.id }} - CampusSync{% endblock %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 0 auto;">
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h2>Issue Details (#{{ issue.id }})</h2>
+<div style="max-width: 780px; margin: 0 auto;">
+    <div style="margin-bottom: 1rem;">
+        <a href="{{ url_for('routes.management_dashboard') }}" class="btn-link">← Back to Dashboard</a>
+    </div>
+
+    <div class="detail-container">
+        <div class="detail-header">
+            <div>
+                <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">#{{ issue.id }} · {{ issue.category }}</span>
+                <h2 style="margin-top: 0.2rem; margin-bottom: 0;">{{ issue.problem }}</h2>
+            </div>
             <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-            <div>
-                <p><strong>Problem:</strong> {{ issue.problem }}</p>
-                <p><strong>Category:</strong> {{ issue.category }}</p>
-                <p><strong>Room Number:</strong> {{ issue.room_number }}</p>
-                <p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
-            </div>
-            <div>
-                <p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
-                <p><strong>Assigned Staff:</strong> {{ issue.assignment.staff.name if issue.assignment else 'Unassigned' }}</p>
-                <p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-                <p><strong>Assigned At:</strong> {{ issue.assignment.assigned_at.strftime('%Y-%m-%d %H:%M:%S') if issue.assignment else 'N/A' }}</p>
-                <p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'Unresolved' }}</p>
+        <div class="detail-section">
+            <h4>Problem Description</h4>
+            <div style="background: var(--elevated-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.9rem;">
+                {{ issue.description or 'No additional description provided.' }}
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Description:</label>
-            <div style="background: #f8fafc; padding: 1rem; border: 1px solid var(--border-color); border-radius: 4px;">
-                {{ issue.description or 'No description provided.' }}
+        <div class="detail-section">
+            <h4>Location & Classification</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="label">Room Number</div>
+                    <div class="value">{{ issue.room_number }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Category</div>
+                    <div class="value">{{ issue.category }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Department</div>
+                    <div class="value">{{ issue.department.name if issue.department else 'Unassigned' }}</div>
+                </div>
             </div>
         </div>
 
-        <div style="margin-top: 1.5rem;">
-            <a href="{{ url_for('routes.management_dashboard') }}" class="btn btn-secondary">Back to Management Dashboard</a>
+        <div class="detail-section">
+            <h4>Parties Involved</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="label">Submitted By</div>
+                    <div class="value">{{ issue.submitter.name }} ({{ issue.submitter.email }})</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Assigned Staff</div>
+                    <div class="value">{{ issue.assignment.staff.name if issue.assignment else 'Unassigned' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h4>Timeline</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="label">Submitted At</div>
+                    <div class="value">{{ issue.created_at.strftime('%d %b %Y · %H:%M') }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Assigned At</div>
+                    <div class="value">{{ issue.assignment.assigned_at.strftime('%d %b %Y · %H:%M') if issue.assignment else 'N/A' }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">Resolved At</div>
+                    <div class="value">{{ issue.resolved_at.strftime('%d %b %Y · %H:%M') if issue.resolved_at else 'Unresolved' }}</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

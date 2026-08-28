@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CampusSync{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
 </head>
 <body>
     <header>
-        <h1><a href="{{ url_for('routes.index') }}">CampusSync</a></h1>
-        {% if g.user %}
-            <div class="user-info">
-                Logged in as: <strong>{{ g.user.name }}</strong> ({{ g.user.role|capitalize }}) | 
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
-            </div>
-        {% endif %}
+        <a href="{{ url_for('routes.index') }}" class="brand-logo">CampusSync</a>
+        <div class="header-controls">
+            <button id="theme-toggle" class="theme-toggle-btn" type="button" aria-label="Toggle color theme"><span>🌙 Dark</span></button>
+            {% if g.user %}
+                <div class="user-profile">
+                    <span class="user-name">{{ g.user.name }}</span>
+                    <span class="role-badge">{{ g.user.role }}</span>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="logout-link">Logout</a>
+            {% endif %}
+        </div>
     </header>
 
     {% with messages = get_flashed_messages(with_categories=true) %}

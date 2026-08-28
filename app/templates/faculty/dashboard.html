@@ -3,46 +3,52 @@
 {% block title %}Faculty Dashboard - CampusSync{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-    <h2>Faculty Dashboard</h2>
+<div class="page-header">
+    <div>
+        <h2>Faculty Dashboard</h2>
+        <p class="page-subtitle">Track and manage operational requests submitted across campus.</p>
+    </div>
     <a href="{{ url_for('routes.faculty_submit_issue') }}" class="btn btn-primary">+ Submit New Issue</a>
 </div>
 
 <div class="card">
-    <h3>Your Submitted Issues</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3>Your Issues</h3>
+        <span class="text-muted" style="font-size: 0.85rem; font-weight: 500;">{{ issues|length }} total</span>
+    </div>
 
     {% if issues %}
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Problem</th>
-                    <th>Room</th>
-                    <th>Category</th>
-                    <th>Department</th>
-                    <th>Status</th>
-                    <th>Submitted At</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for issue in issues %}
-                <tr>
-                    <td>#{{ issue.id }}</td>
-                    <td><strong>{{ issue.problem }}</strong></td>
-                    <td>{{ issue.room_number }}</td>
-                    <td>{{ issue.category }}</td>
-                    <td>{{ issue.department.name if issue.department else 'Unassigned' }}</td>
-                    <td><span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span></td>
-                    <td>{{ issue.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                    <td><a href="{{ url_for('routes.faculty_issue_detail', issue_id=issue.id) }}">View Details</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="issue-list">
+            {% for issue in issues %}
+            <div class="issue-item">
+                <div class="issue-item-main">
+                    <div class="issue-item-header">
+                        <span class="issue-id">#{{ issue.id }}</span>
+                        <h4 class="issue-title">{{ issue.problem }}</h4>
+                        <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
+                    </div>
+                    <div class="issue-item-meta">
+                        <span>{{ issue.department.name if issue.department else 'Unassigned Department' }}</span>
+                        <span>·</span>
+                        <span>{{ issue.room_number }}</span>
+                        <span>·</span>
+                        <span>{{ issue.category }}</span>
+                    </div>
+                    <div class="issue-item-submeta">
+                        Submitted {{ issue.created_at.strftime('%d %b %Y · %H:%M') }}
+                    </div>
+                </div>
+                <div class="issue-item-action">
+                    <a href="{{ url_for('routes.faculty_issue_detail', issue_id=issue.id) }}" class="btn-link">View Details →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     {% else %}
-        <p style="color: var(--text-muted); padding: 1rem 0;">You have not submitted any issues yet.</p>
+        <div class="empty-state">
+            <p>You have not submitted any issues yet.</p>
+            <a href="{{ url_for('routes.faculty_submit_issue') }}" class="btn btn-primary" style="margin-top: 0.75rem;">Submit First Issue</a>
+        </div>
     {% endif %}
 </div>
-
 {% endblock %}
