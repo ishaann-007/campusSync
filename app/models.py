@@ -39,7 +39,7 @@ class Issue(db.Model):
     category = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(20), nullable=False, default='Submitted')
     submitted_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     resolved_at = db.Column(db.DateTime, nullable=True)
 

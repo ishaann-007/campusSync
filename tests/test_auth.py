@@ -54,7 +54,7 @@ class AuthTestCase(unittest.TestCase):
         # Faculty login
         response = self.login('faculty@test.com', 'facpass')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Faculty Dashboard (Placeholder)', response.data)
+        self.assertIn(b'Faculty Dashboard', response.data)
 
         # Logout
         response = self.logout()
@@ -83,7 +83,7 @@ class AuthTestCase(unittest.TestCase):
         # Attempt to access Staff route
         response = self.client.get('/staff', follow_redirects=True)
         self.assertIn(b'Unauthorized access', response.data)
-        self.assertIn(b'Faculty Dashboard (Placeholder)', response.data)
+        self.assertIn(b'Faculty Dashboard', response.data)
 
         # Attempt to access Management route
         response = self.client.get('/management', follow_redirects=True)

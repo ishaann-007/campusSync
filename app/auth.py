@@ -32,7 +32,7 @@ def role_required(*roles):
                 flash('Unauthorized access.', 'danger')
                 # Redirect to user's own role page if available
                 if g.user.role == 'faculty':
-                    return redirect(url_for('routes.faculty_placeholder'))
+                    return redirect(url_for('routes.faculty_dashboard'))
                 elif g.user.role == 'staff':
                     return redirect(url_for('routes.staff_placeholder'))
                 elif g.user.role == 'management':

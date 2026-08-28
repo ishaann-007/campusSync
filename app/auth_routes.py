@@ -8,7 +8,7 @@ bp = Blueprint('auth', __name__)
 def login():
     if g.user is not None:
         if g.user.role == 'faculty':
-            return redirect(url_for('routes.faculty_placeholder'))
+            return redirect(url_for('routes.faculty_dashboard'))
         elif g.user.role == 'staff':
             return redirect(url_for('routes.staff_placeholder'))
         elif g.user.role == 'management':
@@ -28,7 +28,7 @@ def login():
             session.clear()
             session['user_id'] = user.id
             if user.role == 'faculty':
-                return redirect(url_for('routes.faculty_placeholder'))
+                return redirect(url_for('routes.faculty_dashboard'))
             elif user.role == 'staff':
                 return redirect(url_for('routes.staff_placeholder'))
             elif user.role == 'management':
