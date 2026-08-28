@@ -1,35 +1,23 @@
-# CampusSync — Research & Product Definition
+# CampusSync — Product Research & Requirements
 
-## 1. Project Overview
-
-**CampusSync** is a centralized coordination platform for academic institutions.
-
-The goal is to turn informal operational requests into a structured, trackable workflow.
-
-### Core Concept
-
-> Faculty submit operational issues, CampusSync automatically routes each issue to the appropriate department and assigns it to a staff member based on workload. Staff manage the issue through resolution, while management can monitor the overall workflow.
+> **Project:** CampusSync
+> **Context:** 48-hour BuildSprint hackathon
+> **Status:** Product definition substantially finalized
 
 ---
 
-## 2. Problem Statement
+## 1. Problem
 
 Academic institutions often rely on fragmented communication between faculty, departments, facilities teams, and administration for everyday operational issues.
 
 Examples include:
 
-* IT or equipment malfunctions
-* Classroom or facility problems
-* Academic or schedule-related issues
+* IT/equipment malfunctions
+* Classroom/facility problems
+* Academic or schedule changes
 * Miscellaneous institutional requests
 
-These requests may be communicated through:
-
-* WhatsApp
-* Email
-* Phone calls
-* Verbal communication
-* Other informal channels
+These requests may be communicated through WhatsApp, email, phone calls, verbal communication, or other informal channels.
 
 This can result in:
 
@@ -43,41 +31,49 @@ This can result in:
 
 ---
 
-## 3. Proposed Solution
+## 2. Proposed Solution
 
-CampusSync provides a centralized workflow for handling institutional operational requests.
+**CampusSync** is a centralized coordination platform for academic institutions.
 
-The intended workflow is:
+The goal is to turn informal operational requests into a structured and trackable workflow.
+
+The core workflow is:
 
 **Faculty → Automatic Routing → Department → Automatic Staff Assignment → Resolution → Management Visibility**
 
-Instead of relying on informal communication, each issue becomes a structured record with:
+A Faculty member submits an operational issue.
 
-* A defined category
-* A responsible department
-* A responsible staff member
-* A current status
-* Submission and resolution timestamps
+CampusSync then:
+
+1. Determines the responsible department from the selected category.
+2. Identifies eligible Staff members in that department.
+3. Assigns the issue to the Staff member with the lowest active workload.
+4. Allows the Staff member to acknowledge and work on the issue.
+5. Allows the Staff member to mark the issue as resolved.
+6. Allows Management to monitor the overall workflow.
 
 ---
 
-## 4. Target Users
+## 3. Target Users
 
-The MVP contains exactly three user roles.
+The MVP has exactly three user roles.
 
-### Faculty
+### 3.1 Faculty
 
 Faculty members can:
 
 * Submit operational issues
 * Provide issue details
 * Select an issue category
-* Track their submitted issues
-* View the responsible department and assigned Staff
+* View their submitted issues
+* Track issue status
+* View issue details
 
-Faculty cannot select the responsible department or Staff member.
+Faculty do not choose the responsible department or Staff member.
 
-### Department Staff
+---
+
+### 3.2 Department Staff
 
 Department Staff can:
 
@@ -85,29 +81,30 @@ Department Staff can:
 * View issue details
 * Acknowledge assigned issues
 * Work on issues
-* Update issue status
 * Mark issues as resolved
 
-Staff cannot manually choose or reassign issues.
+Staff cannot choose their assignments or modify the original issue details.
 
-### Management
+---
+
+### 3.3 Management
 
 Management can:
 
 * View issues across the institution
+* View issue details
 * Monitor issue statuses
-* See responsible departments
-* See assigned Staff
+* See responsible departments and Staff
+* View issue counts
 * Filter issues by status, department, and category
-* View overall issue counts
 
-Management is an oversight role in the MVP rather than an operational issue-handling role.
+Management has read-only visibility into issues in the MVP.
 
 ---
 
-## 5. Issue Categories
+## 4. Issue Categories
 
-The MVP uses four predefined issue categories:
+The MVP contains four categories:
 
 1. **IT / Equipment**
 2. **Facilities / Classroom**
@@ -118,79 +115,71 @@ Faculty members select the category when submitting an issue.
 
 ---
 
-## 6. Department Routing
+## 5. Department Routing
 
-CampusSync uses predefined deterministic routing rules.
+Each issue category is mapped to a responsible department.
 
-No AI-based issue classification is required for the MVP.
-
-| Issue Category         | Responsible Department  |
+| Category               | Department              |
 | ---------------------- | ----------------------- |
 | IT / Equipment         | IT Department           |
 | Facilities / Classroom | Facilities Department   |
 | Academic / Schedule    | Academic Administration |
 | Miscellaneous          | General Administration  |
 
-The routing process is:
+Routing uses predefined deterministic rules.
 
-**Selected Category → Predefined Routing Rule → Responsible Department**
+AI-based classification is not part of the MVP.
 
-Faculty members select the category, while CampusSync determines the responsible department.
-
-The category-to-department mapping is treated as application logic rather than a separate data object.
+The Faculty member selects the category, and the application determines the responsible department.
 
 ---
 
-## 7. Automatic Staff Assignment
+## 6. Automatic Staff Assignment
 
 After an issue is routed to a department, CampusSync automatically assigns it to an eligible Staff member.
 
 ### Eligibility
 
-Only Staff belonging to the responsible department are eligible for assignment.
+Only Staff members belonging to the responsible department are considered.
 
-### Assignment Strategy
+### Workload
 
-The MVP uses **workload-based assignment**.
-
-Active workload is the number of issues currently assigned to a Staff member whose status is:
+A Staff member's active workload consists of issues currently in:
 
 * `Assigned`
 * `In Progress`
 
 Resolved issues do not count toward active workload.
 
-The new issue is assigned to the eligible Staff member with the lowest active workload.
+### Selection
+
+The Staff member with the lowest active workload is selected.
 
 Example:
 
-| Staff Member | Active Issues |
-| ------------ | ------------: |
-| Staff A      |             4 |
-| Staff B      |             2 |
-| Staff C      |             1 |
+| Staff   | Active Issues |
+| ------- | ------------: |
+| Staff A |             4 |
+| Staff B |             2 |
+| Staff C |             1 |
 
 A new issue is assigned to **Staff C**.
 
-If multiple Staff members have the same workload, a simple deterministic tie-breaking rule will be used.
+If multiple Staff members have the same workload, a deterministic tie-breaking mechanism will be used.
 
-### No Eligible Staff
+### No eligible Staff
 
-If no eligible Staff member is available in the responsible department, the issue remains:
+If no eligible Staff member exists:
 
-**`Submitted` and unassigned.**
+* No Assignment is created.
+* The issue remains `Submitted`.
+* Management can see the issue.
 
-The issue remains visible to Management.
-
-### Reassignment
-
-Manual reassignment is outside the MVP scope.
-
-The MVP stores only the **current assignment** and does not maintain assignment history.
+Assignment history and manual reassignment are outside the MVP.
 
 ---
 
-## 8. Issue Lifecycle
+## 7. Issue Lifecycle
 
 The MVP uses four issue statuses:
 
@@ -198,89 +187,184 @@ The MVP uses four issue statuses:
 
 ### Status meanings
 
-| Status        | Meaning                                                                   |
-| ------------- | ------------------------------------------------------------------------- |
-| `Submitted`   | The Faculty member has submitted the issue                                |
-| `Assigned`    | CampusSync has assigned the issue to a Staff member                       |
-| `In Progress` | The assigned Staff member has acknowledged the issue and is working on it |
-| `Resolved`    | The Staff member has completed the issue                                  |
+#### Submitted
 
-### Status transitions
+The Faculty member has submitted the issue.
 
-Status transitions are strictly forward-only.
+If Staff is available, the system routes and assigns the issue.
 
-```text
-Submitted
-    ↓
-Assigned
-    ↓
-In Progress
-    ↓
-Resolved
-```
+If no eligible Staff member is available, the issue remains in this state.
 
-The normal transitions are:
+#### Assigned
 
-| Current Status | Trigger                         | Next Status   |
-| -------------- | ------------------------------- | ------------- |
-| `Submitted`    | Successful automatic assignment | `Assigned`    |
-| `Assigned`     | Staff acknowledges the issue    | `In Progress` |
-| `In Progress`  | Staff marks the issue resolved  | `Resolved`    |
+The system has assigned the issue to a Staff member, but the Staff member has not yet acknowledged it.
 
-If no eligible Staff member exists, the issue remains `Submitted`.
+#### In Progress
 
-When an issue becomes `Resolved`, the system records the resolution timestamp.
+The assigned Staff member has acknowledged the issue and is handling it.
 
-A separate completion field is not required because completion is represented by the `Resolved` status.
+#### Resolved
+
+The Staff member has marked the issue as resolved.
+
+Resolved issues cannot be reopened in the MVP.
+
+If the same problem occurs again, Faculty submits a new issue.
 
 ---
 
-## 9. User Flows & Interface Direction
+## 8. Status Transition Rules
 
-CampusSync will be implemented as a **responsive web application**.
+Status transitions are strictly forward-only.
 
-A separate mobile application is outside the MVP scope.
+| Current Status | Trigger                     | Next Status |
+| -------------- | --------------------------- | ----------- |
+| Submitted      | Successful Staff assignment | Assigned    |
+| Assigned       | Staff acknowledges          | In Progress |
+| In Progress    | Staff marks resolved        | Resolved    |
 
-The same general interaction pattern will be used across the application: users can open an issue to view its details in a **drawer/sidebar** rather than navigating to a separate issue-details page.
+There are no arbitrary backward transitions.
 
-On smaller screens, the drawer can adapt into a larger or full-screen details view.
+A resolved issue cannot return to an earlier status.
 
-### 9.1 Faculty Flow
+---
 
-```text
-Login
-  ↓
-Faculty Dashboard
-  ↓
-Submit Issue / Track Issues
-  ↓
-Issue Details Drawer
-```
+## 9. Issue Information
 
-The Faculty issue submission form contains:
+When Faculty submits an issue, they provide:
 
 * Problem
 * Description
 * Room number
 * Category
 
-Faculty does not provide:
+The system generates or determines:
 
-* Department
-* Staff member
+* Issue ID
+* Submitting Faculty member
+* Responsible Department
+* Assignment
+* Status
+* Submission timestamp
+* Resolution timestamp
 
-These are determined automatically by CampusSync.
+The original issue details are intentionally stable after submission.
 
-### 9.2 Staff Flow
+---
+
+## 10. Data Objects
+
+The MVP uses four core data objects.
+
+### User
+
+Represents a person using CampusSync.
+
+Conceptually contains:
+
+* User ID
+* Name
+* Email
+* Password
+* Role
+* Department association where applicable
+
+Roles:
+
+* Faculty
+* Staff
+* Management
+
+Staff members belong to an operational department.
+
+---
+
+### Department
+
+Represents an operational department responsible for handling issues.
+
+Conceptually contains:
+
+* Department ID
+* Department name
+
+Initial departments:
+
+* IT Department
+* Facilities Department
+* Academic Administration
+* General Administration
+
+---
+
+### Issue
+
+Represents an operational problem submitted by Faculty.
+
+Conceptually contains:
+
+* Issue ID
+* Problem
+* Description
+* Room number
+* Category
+* Submitting Faculty
+* Responsible Department
+* Status
+* Created timestamp
+* Resolved timestamp
+
+---
+
+### Assignment
+
+Represents the current Staff member responsible for an Issue.
+
+Conceptually contains:
+
+* Assignment ID
+* Issue ID
+* Staff ID
+* Assignment timestamp
+
+The MVP stores only the current assignment.
+
+Assignment history and reassignment history are not required.
+
+---
+
+## 11. User Flows
+
+### Faculty
+
+```text
+Login
+  ↓
+Faculty Dashboard
+  ↓
+Submit Issue
+  ↓
+Automatic Routing
+  ↓
+Automatic Assignment
+  ↓
+View / Track Issue
+```
+
+Faculty can open an issue using a details drawer/sidebar.
+
+---
+
+### Staff
 
 ```text
 Login
   ↓
 Staff Dashboard
   ↓
-Assigned Issues
+View Assigned Issues
   ↓
-Issue Details Drawer
+Open Issue
   ↓
 Acknowledge
   ↓
@@ -291,9 +375,11 @@ Mark Resolved
 Resolved
 ```
 
-Staff see only issues currently assigned to them.
+Staff only see issues assigned to them.
 
-### 9.3 Management Flow
+---
+
+### Management
 
 ```text
 Login
@@ -302,14 +388,36 @@ Management Dashboard
   ↓
 Summary Counts
   ↓
-All Institutional Issues
+View All Issues
   ↓
-Filter / Inspect Issue
+Filter Issues
   ↓
-Issue Details Drawer
+Open Issue Details
 ```
 
-The Management dashboard provides simple summary counts for:
+Management can view institution-wide issues.
+
+---
+
+## 12. Interface Direction
+
+CampusSync will be a responsive web application.
+
+A separate mobile application is not part of the MVP.
+
+The interface should provide a good-looking, clear, and usable experience on both desktop and smaller screens.
+
+Issues will generally be opened using a **details drawer/sidebar** rather than a separate issue-details page.
+
+On smaller screens, the drawer may adapt to a larger or full-screen presentation.
+
+---
+
+## 13. Management Dashboard
+
+Management will have a dedicated oversight dashboard.
+
+It will contain simple summary counts:
 
 * Total Issues
 * Assigned
@@ -322,61 +430,165 @@ Management can filter the issue list by:
 * Department
 * Category
 
-Advanced analytics are outside the MVP.
+Advanced analytics are not part of the MVP.
 
 ---
 
-## 10. Issue Editing & Status Rules
+## 14. Issue Editing & Deletion Rules
 
-The MVP intentionally keeps issue records stable after submission.
-
-### Faculty Editing
+### Faculty
 
 Faculty cannot edit an issue after submission.
 
-This is an explicit MVP limitation.
-
-If a correction or new problem needs to be reported, a new issue should be submitted.
-
-### Staff Editing
+### Staff
 
 Staff cannot modify the original issue details.
 
-The following remain unchanged after submission:
+The following remain unchanged:
 
 * Problem
 * Description
 * Room number
 * Category
 
-Staff interact with the issue through its status workflow rather than modifying the original report.
+### Management
 
-### Issue Deletion
+Management has read-only visibility.
+
+### Deletion
 
 Issues cannot be deleted in the MVP.
 
-This preserves the issue record and avoids deletion-related assignment and history handling.
-
 ### Reopening
 
-Resolved issues cannot be reopened in the MVP.
+Resolved issues cannot be reopened.
 
-If the same problem occurs again, Faculty submits a new issue.
-
-Therefore:
-
-**Resolved → End**
+If the problem occurs again, a new issue is submitted.
 
 ---
 
-## 11. MVP Scope
+## 15. Product Decisions
 
-The MVP prioritizes a working, demonstrable core workflow over a large number of features.
+The following decisions have been made during product planning.
 
-### Required MVP Features
+### Decision 1 — Issue Lifecycle
+
+The issue lifecycle is:
+
+**Submitted → Assigned → In Progress → Resolved**
+
+Staff acknowledgement moves an issue from `Assigned` to `In Progress`.
+
+Staff resolution moves an issue from `In Progress` to `Resolved`.
+
+---
+
+### Decision 2 — Department Routing
+
+Routing is deterministic and category-based.
+
+Faculty selects the category.
+
+The application determines the responsible department using the predefined category-to-department mapping.
+
+---
+
+### Decision 3 — Automatic Staff Assignment
+
+Staff assignment is automatic.
+
+The system considers only Staff belonging to the responsible department and assigns the issue to the Staff member with the lowest active workload.
+
+Active workload includes:
+
+* Assigned issues
+* In Progress issues
+
+Resolved issues are excluded.
+
+---
+
+### Decision 4 — Authentication & Permissions
+
+The MVP has exactly three roles:
+
+* Faculty
+* Staff
+* Management
+
+Users are pre-created for the MVP.
+
+There is no public registration system.
+
+Each role has access only to the functionality appropriate to that role.
+
+---
+
+### Decision 5 — Faculty Flow
+
+Faculty uses a dashboard to:
+
+* Submit issues
+* View submitted issues
+* Track issue status
+
+Issue details open through a drawer/sidebar.
+
+The MVP is a responsive web application rather than a separate mobile application.
+
+---
+
+### Decision 6 — Staff Flow
+
+Staff uses a dashboard showing their assigned issues.
+
+Opening an issue provides the appropriate workflow action.
+
+`Acknowledge` immediately changes:
+
+**Assigned → In Progress**
+
+`Mark as Resolved` changes:
+
+**In Progress → Resolved**
+
+Staff cannot modify the original issue details.
+
+---
+
+### Decision 7 — Management Flow
+
+Management uses a dedicated dashboard containing:
+
+* Summary issue counts
+* Institution-wide issue list
+* Status filtering
+* Department filtering
+* Category filtering
+* Issue details drawer
+
+Advanced analytics are excluded from the MVP.
+
+---
+
+### Decision 8 — Issue Editing & Status Rules
+
+The MVP uses stable issue records.
+
+* Faculty cannot edit after submission.
+* Staff cannot edit original issue details.
+* Management has read-only visibility.
+* Issues cannot be deleted.
+* Resolved issues cannot be reopened.
+* Status transitions are strictly forward-only.
+
+---
+
+## 16. MVP Scope
+
+The MVP must provide:
 
 * Three user roles
-* User authentication
 * Faculty issue submission
 * Four issue categories
 * Issue details
@@ -386,439 +598,123 @@ The MVP prioritizes a working, demonstrable core workflow over a large number of
 * Issue status tracking
 * Staff issue management
 * Management visibility
-* Management filtering
+* Basic Management filtering
 * Responsive web interface
 
-### Features Outside Initial MVP Scope
+The priority is a reliable end-to-end workflow rather than a large number of features.
 
-The initial version will not include:
+---
 
-* Separate mobile applications
-* AI-based issue classification
+## 17. Explicitly Out of Scope
+
+The following are not required for the MVP:
+
+* Mobile application
+* AI-based classification
 * Advanced notification infrastructure
-* Escalation systems
-* Manual reassignment workflows
-* Assignment history
-* Staff comments or chat
-* Sophisticated analytics
-* Staff performance metrics
+* Advanced analytics
 * ERP integration
 * Complex scheduling software
 * Advanced workforce optimization
+* Manual reassignment
+* Assignment history
+* Issue reopening
+* Issue deletion
+* Issue editing after submission
+* Staff comments or chat
+* Escalation workflows
 * Other unrelated institutional systems
 
-Additional features should only be considered after the core MVP works reliably.
+Optional features should only be considered after the core MVP is working reliably.
 
 ---
 
-## 12. Technology Stack
+## 18. Known MVP Limitations
 
-The selected technology stack for the MVP is:
+The MVP intentionally uses simplified workflows suitable for a 48-hour hackathon.
 
-| Component              | Technology     |
-| ---------------------- | -------------- |
-| Backend                | Python + Flask |
-| Database               | SQLite         |
-| Server-side templating | Jinja2         |
-| Frontend markup        | HTML           |
-| Styling                | CSS            |
-| Client-side behavior   | JavaScript     |
-| Version control        | Git + GitHub   |
+Examples include:
 
-### Stack Selection Rationale
+* No issue editing after submission
+* No manual reassignment
+* No assignment history
+* No reopening of resolved issues
+* No notifications
+* No escalation mechanism
+* No staff comments or chat
+* No advanced workforce management
 
-The stack was selected with the 48-hour development constraint and beginner development experience in mind.
-
-The project will use a simple monolithic architecture rather than introducing unnecessary complexity such as:
-
-* Separate frontend and backend applications
-* React or another frontend framework
-* Multiple backend services
-* A separate database server
-* Microservices
-* Complex infrastructure
-
-The priority is to produce a reliable end-to-end MVP that can be understood, tested, and demonstrated within the hackathon timeframe.
-
-Detailed technical implementation will be documented separately in:
-
-`docs/architecture.md`
+These limitations may be revisited if the core MVP is completed early.
 
 ---
 
-## 13. UI/UX Direction
+## 19. Development Philosophy
 
-Although the technical architecture is intentionally simple, the final product should provide a polished and professional user experience.
+CampusSync is being built by a solo beginner within a 48-hour hackathon.
 
-### Visual Direction
+Therefore development should prioritize:
 
-**Clean, modern, professional academic SaaS.**
+* Small implementation steps
+* Simple solutions
+* Understandability
+* Reliable functionality
+* Frequent testing
+* Minimal infrastructure
+* Avoiding unnecessary dependencies
+* Avoiding premature optimization
+* Avoiding feature creep
 
-The interface should maintain a consistent design language across all three user roles.
-
-The planned interface should prioritize:
-
-* Clear navigation
-* Consistent typography
-* Good spacing and layout
-* Responsive design
-* Dashboard views
-* Cards and summary information
-* Tables or issue lists where appropriate
-* Clear issue status indicators
-* Simple and understandable forms
-* Clear actions and feedback
-* Consistent components across roles
-
-The frontend will continue to use HTML, CSS, JavaScript, and Jinja2 rather than introducing a separate frontend framework solely for visual purposes.
-
-UI/UX details can be refined during implementation without changing the underlying product workflow.
-
----
-
-## 14. Data Model
-
-The MVP uses four core data objects:
-
-* **User**
-* **Department**
-* **Issue**
-* **Assignment**
-
-The data model is intentionally limited to these objects to keep the MVP manageable within the 48-hour hackathon.
-
-### 14.1 User
-
-Represents every person who interacts with CampusSync.
+The intended progression is:
 
 ```text
-User
-├── user_id
-├── name
-├── email
-├── password
-├── role
-└── department_id
+1. Basic application
+       ↓
+2. Authentication
+       ↓
+3. Faculty issue submission
+       ↓
+4. Department routing
+       ↓
+5. Automatic Staff assignment
+       ↓
+6. Staff workflow
+       ↓
+7. Management dashboard
+       ↓
+8. Complete workflow testing
+       ↓
+9. UI polish
+       ↓
+10. Demo preparation
 ```
-
-#### Roles
-
-The MVP contains exactly three roles:
-
-* Faculty
-* Staff
-* Management
-
-`department_id` is primarily relevant to Staff and identifies the operational department they belong to.
-
-Faculty and Management do not require an operational department association for the MVP.
-
-Management receives institution-wide visibility through its role rather than belonging to a separate Management Department.
 
 ---
 
-### 14.2 Department
+## 20. Future Improvements
 
-Represents an operational department responsible for handling issues.
+If sufficient time remains after the MVP is reliable, possible future improvements include:
 
-```text
-Department
-├── department_id
-└── name
-```
-
-The initial departments are:
-
-1. IT Department
-2. Facilities Department
-3. Academic Administration
-4. General Administration
-
-The category-to-department mapping is predefined application logic rather than a separate data object.
-
----
-
-### 14.3 Issue
-
-Represents an operational problem submitted by Faculty.
-
-```text
-Issue
-├── issue_id
-├── problem
-├── description
-├── room_number
-├── category
-├── submitted_by
-├── department_id
-├── status
-├── created_at
-└── resolved_at
-```
-
-#### Faculty-provided information
-
-* `problem` — short summary of the issue
-* `description` — additional details about the problem
-* `room_number` — location where the issue is occurring
-* `category` — selected from the four predefined categories
-
-Faculty selects the category but does not select the responsible department or Staff member.
-
-#### System-generated information
-
-* `issue_id` — unique identifier
-* `submitted_by` — Faculty user who submitted the issue
-* `department_id` — department determined by routing logic
-* `status` — current issue lifecycle state
-* `created_at` — time the issue was submitted
-* `resolved_at` — time the issue was marked resolved
-
-Completion is represented by `status = Resolved`. A separate completion flag is not required.
-
----
-
-### 14.4 Assignment
-
-Represents the current Staff member responsible for an Issue.
-
-```text
-Assignment
-├── assignment_id
-├── issue_id
-├── staff_id
-└── assigned_at
-```
-
-The MVP uses **one current Assignment per Issue**.
-
-Assignment history and reassignment history are outside the initial MVP scope.
-
-The Assignment connects an Issue to a Staff user.
-
-Staff workload is calculated from their active assigned Issues rather than stored as a separate value.
-
----
-
-### 14.5 Data Relationships
-
-The core relationships are:
-
-```text
-User (Faculty)
-      │
-      │ submits
-      ▼
-    Issue
-      │
-      │ routed to
-      ▼
- Department
-      │
-      │ identifies eligible Staff
-      ▼
-User (Staff)
-
-Issue
-  │
-  │ has one current Assignment
-  ▼
-Assignment
-  │
-  │ assigned to
-  ▼
-User (Staff)
-```
-
-The overall product workflow is:
-
-```text
-Faculty submits Issue
-        ↓
-Faculty selects Category
-        ↓
-Routing Logic determines Department
-        ↓
-Eligible Staff are identified
-        ↓
-Active workloads are compared
-        ↓
-Lowest-workload Staff member is selected
-        ↓
-Current Assignment is created
-        ↓
-Staff acknowledges the issue
-        ↓
-Issue becomes In Progress
-        ↓
-Staff resolves the issue
-        ↓
-Issue becomes Resolved
-        ↓
-Management can monitor the issue
-```
-
-### 14.6 Data Objects Deliberately Not Included
-
-The MVP does not use separate data objects for:
-
-* Routing Rules
-* Workload
-* Assignment History
-* Categories
-* Issue Statuses
+* Issue editing/correction workflows
+* Manual reassignment
+* Assignment history
 * Notifications
-* Staff Skills
-* Staff Locations
-* Analytics
-* Comments or chat
+* Escalation mechanisms
+* Staff notes
+* Issue reopening
+* Advanced analytics
+* AI-assisted classification
+* Mobile application
 
-Where appropriate, these are represented through predefined values or application logic.
-
----
-
-## 15. Development Philosophy
-
-CampusSync is being developed for a **48-hour hackathon**, so development will prioritize simplicity and reliability.
-
-### Principles
-
-* Work in small steps
-* Establish the simplest working version first
-* Test each milestone before moving forward
-* Prefer simple implementations over sophisticated ones
-* Avoid unnecessary libraries and infrastructure
-* Avoid premature optimization
-* Avoid feature creep
-* Prioritize the complete end-to-end workflow
-* Polish the interface after the core functionality is reliable
-* Do not add optional features until the MVP is working reliably
-
-### Planned Development Progression
-
-1. Get the basic application running
-2. Establish the database and core data model
-3. Set up authentication and user roles
-4. Implement Faculty issue submission
-5. Implement category selection
-6. Implement department routing
-7. Implement automatic Staff assignment
-8. Implement Staff workflow
-9. Implement Management dashboard and filtering
-10. Test the complete workflow
-11. Polish the UI
-12. Prepare the final demo
-
-This sequence may be adjusted if technical decisions require it.
+These are future possibilities and are not requirements for the hackathon MVP.
 
 ---
 
-## 16. Known MVP Limitations
+## 21. Product Status
 
-The following limitations are intentional scope decisions for the hackathon:
+**Current status:** Core product definition substantially finalized.
 
-* Faculty cannot edit issues after submission.
-* Staff cannot modify the original issue details.
-* Issues cannot be deleted.
-* Resolved issues cannot be reopened.
-* Manual reassignment is not supported.
-* Assignment history is not stored.
-* If no eligible Staff member exists, an issue remains `Submitted` and unassigned.
-* No notification or escalation system is included.
-* No separate mobile application is included.
-* Management receives basic counts and filtering rather than advanced analytics.
-* No chat, comments, or communication system is included.
-* No AI classification is used for routing.
+The major product decisions have been made.
 
-These limitations can be revisited after the core MVP is complete if sufficient development time remains.
+Further decisions should be made only when they are necessary for implementation or are required to resolve an actual ambiguity.
 
----
-
-## 17. Current Development Status
-
-The project is currently transitioning from **product definition to technical architecture and implementation planning**.
-
-### Completed
-
-* Problem definition
-* Proposed solution
-* User roles
-* Issue categories
-* Department routing strategy
-* Automatic assignment strategy
-* Issue lifecycle
-* User flows
-* Management dashboard scope
-* Core data model
-* MVP limitations
-* Technology stack
-
-### Next Stage
-
-The next stage is to finalize the technical architecture, including:
-
-* Database implementation
-* Application structure
-* Routing implementation
-* Assignment implementation
-* Authentication implementation
-* Role-based access implementation
-* Application flows
-* Project folder structure
-
-These technical decisions will be documented in:
-
-`docs/architecture.md`
-
----
-
-## 18. Repository Documentation
-
-Current repository structure:
-
-```text
-CampusSync/
-├── docs/
-│   └── research.md
-└── README.md
-```
-
-Planned structure:
-
-```text
-CampusSync/
-├── docs/
-│   ├── research.md
-│   └── architecture.md
-├── README.md
-└── ...
-```
-
-### Documentation Responsibilities
-
-`research.md` defines:
-
-* The problem
-* The proposed solution
-* Product requirements
-* User roles
-* Product workflow
-* MVP scope
-* Product-level decisions
-* Known limitations
-
-`architecture.md` defines:
-
-* How the agreed product is implemented technically
-* Application structure
-* Database relationships
-* Routing implementation
-* Assignment implementation
-* Authentication architecture
-* Role-based access
-* Technical workflows
-* Project structure
-
-The two documents should be maintained separately to avoid unnecessary duplication.
-
-Existing decisions should be edited in place rather than creating multiple competing versions of the same decision.
+The project should now move from product planning toward technical implementation.
