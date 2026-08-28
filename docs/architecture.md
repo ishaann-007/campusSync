@@ -442,9 +442,10 @@ Assigned to Staff C
 
 ### Tie-breaking
 
-If multiple eligible Staff members have the same active workload, a deterministic tie-breaking mechanism will be used.
+If multiple eligible Staff members have the same active workload,
+the Staff member whose name comes first alphabetically is selected.
 
-The exact tie-breaking mechanism is an implementation detail that should remain simple and deterministic.
+This provides a simple and deterministic tie-breaking rule.
 
 ### No Eligible Staff
 

@@ -197,7 +197,8 @@ Faculty-selected category.
 
 # Milestone 5 --- Automatic Staff Assignment
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
+
 
 ### Goal
 
@@ -217,6 +218,8 @@ Resolved Issues do not count.
 
 The eligible Staff member with the lowest active workload receives the
 Issue.
+
+Equal workloads are resolved by alphabetical Staff name.
 
 ### Acceptance Criteria
 
@@ -504,7 +507,7 @@ Do not sacrifice the core workflow to add optional features.
 [██████████] Milestone 2 — Authentication       ✅
 [██████████] Milestone 3 — Issue Submission     ✅
 [██████████] Milestone 4 — Routing              ✅
-[----------] Milestone 5 — Assignment           ⬜
+[██████████] Milestone 5 — Assignment           ✅
 [----------] Milestone 6 — Staff Workflow       ⬜
 [----------] Milestone 7 — Management           ⬜
 [----------] Milestone 8 — Integration Testing  ⬜

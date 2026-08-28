@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, g, redirect, url_for, request, fla
 from app import db
 from app.models import Issue
 from app.auth import role_required
-from app.services import get_department_for_category
+from app.services import get_department_for_category, assign_issue_to_staff
 
 bp = Blueprint('routes', __name__)
 
@@ -72,6 +72,10 @@ def faculty_submit_issue():
 
         db.session.add(new_issue)
         db.session.commit()
+
+        # Attempt automatic staff assignment
+        if department:
+            assign_issue_to_staff(new_issue)
 
         flash('Issue submitted successfully.', 'success')
         return redirect(url_for('routes.faculty_dashboard'))
