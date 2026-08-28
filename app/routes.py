@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, g, redirect, url_for, request, fla
 from app import db
 from app.models import Issue
 from app.auth import role_required
+from app.services import get_department_for_category
 
 bp = Blueprint('routes', __name__)
 
@@ -30,7 +31,7 @@ def faculty_dashboard():
     selected_issue_id = request.args.get('issue_id', type=int)
     selected_issue = None
     if selected_issue_id:
-        issue = Issue.query.get(selected_issue_id)
+        issue = db.session.get(Issue, selected_issue_id)
         if issue and issue.submitted_by == g.user.id:
             selected_issue = issue
         else:
@@ -57,13 +58,16 @@ def faculty_submit_issue():
             return render_template('faculty/submit.html', categories=CATEGORIES,
                                    problem=problem, description=description, room_number=room_number, category=category)
 
+        department = get_department_for_category(category)
+
         new_issue = Issue(
             problem=problem,
             description=description,
             room_number=room_number,
             category=category,
             status='Submitted',
-            submitted_by=g.user.id
+            submitted_by=g.user.id,
+            department_id=department.id if department else None
         )
 
         db.session.add(new_issue)
@@ -91,4 +95,5 @@ def staff_placeholder():
 @role_required('management')
 def management_placeholder():
     return render_template('management/placeholder.html')
+
 

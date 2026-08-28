@@ -164,7 +164,7 @@ The system generates/stores:
 
 # Milestone 4 --- Department Routing
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
 
 ### Goal
 
@@ -503,7 +503,7 @@ Do not sacrifice the core workflow to add optional features.
 [██████████] Milestone 1 — Foundation          ✅
 [██████████] Milestone 2 — Authentication       ✅
 [██████████] Milestone 3 — Issue Submission     ✅
-[----------] Milestone 4 — Routing              ⬜
+[██████████] Milestone 4 — Routing              ✅
 [----------] Milestone 5 — Assignment           ⬜
 [----------] Milestone 6 — Staff Workflow       ⬜
 [----------] Milestone 7 — Management           ⬜
