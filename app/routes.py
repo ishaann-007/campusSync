@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, g, redirect, url_for, request, flash, abort
 from app import db
-from app.models import Issue, Assignment
+from app.models import Issue, Assignment, Department
 from app.auth import role_required
-from app.services import get_department_for_category, assign_issue_to_staff, update_issue_status_by_staff
+from app.services import get_department_for_category, assign_issue_to_staff, update_issue_status_by_staff, get_management_dashboard_data
 
 bp = Blueprint('routes', __name__)
 
@@ -21,7 +21,7 @@ def index():
         elif g.user.role == 'staff':
             return redirect(url_for('routes.staff_dashboard'))
         elif g.user.role == 'management':
-            return redirect(url_for('routes.management_placeholder'))
+            return redirect(url_for('routes.management_dashboard'))
     return redirect(url_for('auth.login'))
 
 @bp.route('/faculty')
@@ -125,7 +125,36 @@ def staff_issue_action(issue_id):
 
 @bp.route('/management')
 @role_required('management')
-def management_placeholder():
-    return render_template('management/placeholder.html')
+def management_dashboard():
+    status_filter = request.args.get('status', '').strip() or None
+    dept_id_filter = request.args.get('department_id', type=int)
+    category_filter = request.args.get('category', '').strip() or None
+
+    counts, issues = get_management_dashboard_data(
+        status_filter=status_filter,
+        department_id_filter=dept_id_filter,
+        category_filter=category_filter
+    )
+
+    departments = Department.query.order_by(Department.name).all()
+
+    return render_template(
+        'management/dashboard.html',
+        counts=counts,
+        issues=issues,
+        departments=departments,
+        categories=CATEGORIES,
+        selected_status=status_filter,
+        selected_dept_id=dept_id_filter,
+        selected_category=category_filter
+    )
+
+@bp.route('/management/issue/<int:issue_id>')
+@role_required('management')
+def management_issue_detail(issue_id):
+    issue = db.session.get(Issue, issue_id)
+    if not issue:
+        abort(404)
+    return render_template('management/detail.html', issue=issue)
 
 

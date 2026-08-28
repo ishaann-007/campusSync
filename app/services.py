@@ -99,4 +99,31 @@ def update_issue_status_by_staff(issue, action, staff_user):
 
     return False, "Invalid action."
 
+def get_management_dashboard_data(status_filter=None, department_id_filter=None, category_filter=None):
+    """
+    Returns management dashboard summary counts and filtered issues list.
+    """
+    # Calculate status counts across all issues
+    counts = {
+        'Submitted': Issue.query.filter_by(status='Submitted').count(),
+        'Assigned': Issue.query.filter_by(status='Assigned').count(),
+        'In Progress': Issue.query.filter_by(status='In Progress').count(),
+        'Resolved': Issue.query.filter_by(status='Resolved').count(),
+        'Total': Issue.query.count()
+    }
+
+    query = Issue.query
+
+    if status_filter:
+        query = query.filter(Issue.status == status_filter)
+    if department_id_filter:
+        query = query.filter(Issue.department_id == department_id_filter)
+    if category_filter:
+        query = query.filter(Issue.category == category_filter)
+
+    issues = query.order_by(Issue.created_at.desc()).all()
+
+    return counts, issues
+
+
 

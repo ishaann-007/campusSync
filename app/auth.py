@@ -36,7 +36,7 @@ def role_required(*roles):
                 elif g.user.role == 'staff':
                     return redirect(url_for('routes.staff_dashboard'))
                 elif g.user.role == 'management':
-                    return redirect(url_for('routes.management_placeholder'))
+                    return redirect(url_for('routes.management_dashboard'))
                 return redirect(url_for('auth.login'))
             return f(*args, **kwargs)
         return decorated_function

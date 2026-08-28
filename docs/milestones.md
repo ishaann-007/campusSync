@@ -304,7 +304,8 @@ When resolved, record `resolved_at`.
 
 # Milestone 7 --- Management Dashboard
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
+
 
 ### Goal
 
@@ -510,7 +511,7 @@ Do not sacrifice the core workflow to add optional features.
 [██████████] Milestone 4 — Routing              ✅
 [██████████] Milestone 5 — Assignment           ✅
 [██████████] Milestone 6 — Staff Workflow       ✅
-[----------] Milestone 7 — Management           ⬜
+[██████████] Milestone 7 — Management           ✅
 [----------] Milestone 8 — Integration Testing  ⬜
 [----------] Milestone 9 — UI Polish            ⬜
 [----------] Milestone 10 — Demo Preparation    ⬜

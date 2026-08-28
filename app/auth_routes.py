@@ -12,7 +12,7 @@ def login():
         elif g.user.role == 'staff':
             return redirect(url_for('routes.staff_dashboard'))
         elif g.user.role == 'management':
-            return redirect(url_for('routes.management_placeholder'))
+            return redirect(url_for('routes.management_dashboard'))
 
     if request.method == 'POST':
         email = request.form.get('email')
@@ -32,7 +32,7 @@ def login():
             elif user.role == 'staff':
                 return redirect(url_for('routes.staff_dashboard'))
             elif user.role == 'management':
-                return redirect(url_for('routes.management_placeholder'))
+                return redirect(url_for('routes.management_dashboard'))
             return redirect(url_for('auth.login'))
 
         flash(error, 'danger')

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Management - Issue Details #{{ issue.id }} - CampusSync{% endblock %}
+
+{% block content %}
+<h2>Issue Details (#{{ issue.id }})</h2>
+
+<p><strong>Problem:</strong> {{ issue.problem }}</p>
+<p><strong>Description:</strong> {{ issue.description or 'No description provided.' }}</p>
+<p><strong>Room Number:</strong> {{ issue.room_number }}</p>
+<p><strong>Category:</strong> {{ issue.category }}</p>
+<p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
+<p><strong>Status:</strong> {{ issue.status }}</p>
+<p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
+<p><strong>Assigned Staff:</strong> {{ issue.assignment.staff.name if issue.assignment else 'Unassigned' }}</p>
+<p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+<p><strong>Assigned At:</strong> {{ issue.assignment.assigned_at.strftime('%Y-%m-%d %H:%M:%S') if issue.assignment else 'N/A' }}</p>
+<p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'Unresolved' }}</p>
+
+<p><br><a href="{{ url_for('routes.management_dashboard') }}">Back to Management Dashboard</a></p>
+{% endblock %}
