@@ -76,7 +76,8 @@ http://127.0.0.1:5000/
 
 # Milestone 2 --- Authentication & Role Handling
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
+
 
 ### Goal
 
@@ -499,7 +500,7 @@ Do not sacrifice the core workflow to add optional features.
 
 ``` text
 [██████████] Milestone 1 — Foundation          ✅
-[----------] Milestone 2 — Authentication       ⬜
+[██████████] Milestone 2 — Authentication       ✅
 [----------] Milestone 3 — Issue Submission     ⬜
 [----------] Milestone 4 — Routing              ⬜
 [----------] Milestone 5 — Assignment           ⬜

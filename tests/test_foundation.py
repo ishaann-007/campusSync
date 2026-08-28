@@ -16,9 +16,10 @@ class BasicFoundationTestCase(unittest.TestCase):
             db.drop_all()
 
     def test_index_route(self):
-        response = self.client.get('/')
+        response = self.client.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'CampusSync', response.data)
+        self.assertIn(b'Login', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()

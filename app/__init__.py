@@ -20,8 +20,12 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    @app.route('/')
-    def index():
-        return 'CampusSync API / Application Foundation Ready'
+    from app.auth import load_logged_in_user
+    app.before_request(load_logged_in_user)
+
+    from app import auth_routes, routes
+    app.register_blueprint(auth_routes.bp)
+    app.register_blueprint(routes.bp)
 
     return app
+

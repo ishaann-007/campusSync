@@ -8,7 +8,19 @@
 <body>
     <header>
         <h1>CampusSync</h1>
+        {% if g.user %}
+            <p>Logged in as: <strong>{{ g.user.name }}</strong> (Role: {{ g.user.role }}) | <a href="{{ url_for('auth.logout') }}">Logout</a></p>
+        {% endif %}
     </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+        {% for category, message in messages %}
+          <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
     <main>
         {% block content %}{% endblock %}
     </main>
