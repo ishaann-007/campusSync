@@ -4,14 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CampusSync{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header>
-        <h1>CampusSync</h1>
+        <h1><a href="{{ url_for('routes.index') }}">CampusSync</a></h1>
         {% if g.user %}
-            <p>Logged in as: <strong>{{ g.user.name }}</strong> (Role: {{ g.user.role }}) | <a href="{{ url_for('auth.logout') }}">Logout</a></p>
+            <div class="user-info">
+                Logged in as: <strong>{{ g.user.name }}</strong> ({{ g.user.role|capitalize }}) | 
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            </div>
         {% endif %}
     </header>
+
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul class="flashes">
@@ -21,6 +26,7 @@
         </ul>
       {% endif %}
     {% endwith %}
+
     <main>
         {% block content %}{% endblock %}
     </main>

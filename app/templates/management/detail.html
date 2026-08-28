@@ -3,19 +3,39 @@
 {% block title %}Management - Issue Details #{{ issue.id }} - CampusSync{% endblock %}
 
 {% block content %}
-<h2>Issue Details (#{{ issue.id }})</h2>
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2>Issue Details (#{{ issue.id }})</h2>
+            <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
+        </div>
 
-<p><strong>Problem:</strong> {{ issue.problem }}</p>
-<p><strong>Description:</strong> {{ issue.description or 'No description provided.' }}</p>
-<p><strong>Room Number:</strong> {{ issue.room_number }}</p>
-<p><strong>Category:</strong> {{ issue.category }}</p>
-<p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
-<p><strong>Status:</strong> {{ issue.status }}</p>
-<p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
-<p><strong>Assigned Staff:</strong> {{ issue.assignment.staff.name if issue.assignment else 'Unassigned' }}</p>
-<p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-<p><strong>Assigned At:</strong> {{ issue.assignment.assigned_at.strftime('%Y-%m-%d %H:%M:%S') if issue.assignment else 'N/A' }}</p>
-<p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'Unresolved' }}</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+                <p><strong>Problem:</strong> {{ issue.problem }}</p>
+                <p><strong>Category:</strong> {{ issue.category }}</p>
+                <p><strong>Room Number:</strong> {{ issue.room_number }}</p>
+                <p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
+            </div>
+            <div>
+                <p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
+                <p><strong>Assigned Staff:</strong> {{ issue.assignment.staff.name if issue.assignment else 'Unassigned' }}</p>
+                <p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>Assigned At:</strong> {{ issue.assignment.assigned_at.strftime('%Y-%m-%d %H:%M:%S') if issue.assignment else 'N/A' }}</p>
+                <p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'Unresolved' }}</p>
+            </div>
+        </div>
 
-<p><br><a href="{{ url_for('routes.management_dashboard') }}">Back to Management Dashboard</a></p>
+        <div class="form-group">
+            <label>Description:</label>
+            <div style="background: #f8fafc; padding: 1rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                {{ issue.description or 'No description provided.' }}
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+            <a href="{{ url_for('routes.management_dashboard') }}" class="btn btn-secondary">Back to Management Dashboard</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

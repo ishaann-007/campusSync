@@ -3,58 +3,46 @@
 {% block title %}Faculty Dashboard - CampusSync{% endblock %}
 
 {% block content %}
-<h2>Faculty Dashboard</h2>
-<p>Welcome, {{ g.user.name }}!</p>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h2>Faculty Dashboard</h2>
+    <a href="{{ url_for('routes.faculty_submit_issue') }}" class="btn btn-primary">+ Submit New Issue</a>
+</div>
 
-<p><a href="{{ url_for('routes.faculty_submit_issue') }}">Submit New Issue</a></p>
+<div class="card">
+    <h3>Your Submitted Issues</h3>
 
-<h3>Your Submitted Issues</h3>
-
-{% if issues %}
-    <table border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Problem</th>
-                <th>Room Number</th>
-                <th>Category</th>
-                <th>Assigned Department</th>
-                <th>Status</th>
-                <th>Submitted At</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for issue in issues %}
-            <tr>
-                <td>#{{ issue.id }}</td>
-                <td>{{ issue.problem }}</td>
-                <td>{{ issue.room_number }}</td>
-                <td>{{ issue.category }}</td>
-                <td>{{ issue.department.name if issue.department else 'Unassigned' }}</td>
-                <td>{{ issue.status }}</td>
-                <td>{{ issue.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td><a href="{{ url_for('routes.faculty_issue_detail', issue_id=issue.id) }}">View Details</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>You have not submitted any issues yet.</p>
-{% endif %}
-
-{% if selected_issue %}
-    <hr>
-    <div id="issue-drawer">
-        <h3>Issue Details (#{{ selected_issue.id }})</h3>
-        <p><strong>Problem:</strong> {{ selected_issue.problem }}</p>
-        <p><strong>Description:</strong> {{ selected_issue.description or 'N/A' }}</p>
-        <p><strong>Room Number:</strong> {{ selected_issue.room_number }}</p>
-        <p><strong>Category:</strong> {{ selected_issue.category }}</p>
-        <p><strong>Assigned Department:</strong> {{ selected_issue.department.name if selected_issue.department else 'Unassigned' }}</p>
-        <p><strong>Status:</strong> {{ selected_issue.status }}</p>
-        <p><strong>Submitted At:</strong> {{ selected_issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-    </div>
-{% endif %}
+    {% if issues %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Problem</th>
+                    <th>Room</th>
+                    <th>Category</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Submitted At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr>
+                    <td>#{{ issue.id }}</td>
+                    <td><strong>{{ issue.problem }}</strong></td>
+                    <td>{{ issue.room_number }}</td>
+                    <td>{{ issue.category }}</td>
+                    <td>{{ issue.department.name if issue.department else 'Unassigned' }}</td>
+                    <td><span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span></td>
+                    <td>{{ issue.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td><a href="{{ url_for('routes.faculty_issue_detail', issue_id=issue.id) }}">View Details</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: var(--text-muted); padding: 1rem 0;">You have not submitted any issues yet.</p>
+    {% endif %}
+</div>
 
 {% endblock %}

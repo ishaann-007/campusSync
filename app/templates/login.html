@@ -3,18 +3,22 @@
 {% block title %}Login - CampusSync{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    <div>
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" required>
+<div style="max-width: 400px; margin: 3rem auto;">
+    <div class="card">
+        <h2>Login to CampusSync</h2>
+        <form method="post">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="e.g. faculty@campussync.edu" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="e.g. password123" required>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+            </div>
+        </form>
     </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required>
-    </div>
-    <div>
-        <button type="submit">Log In</button>
-    </div>
-</form>
+</div>
 {% endblock %}

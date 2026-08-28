@@ -3,37 +3,40 @@
 {% block title %}Submit Operational Issue - CampusSync{% endblock %}
 
 {% block content %}
-<h2>Submit Operational Issue</h2>
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2>Submit Operational Issue</h2>
+        <form method="post" action="{{ url_for('routes.faculty_submit_issue') }}">
+            <div class="form-group">
+                <label for="problem">Problem Title *</label>
+                <input type="text" id="problem" name="problem" class="form-control" value="{{ problem or '' }}" placeholder="e.g., Projector not working" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" class="form-control" required>
+                    <option value="">-- Select Category --</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-<form method="post" action="{{ url_for('routes.faculty_submit_issue') }}">
-    <div>
-        <label for="problem">Problem Title *</label><br>
-        <input type="text" id="problem" name="problem" value="{{ problem or '' }}" required>
+            <div class="form-group">
+                <label for="room_number">Room Number *</label>
+                <input type="text" id="room_number" name="room_number" class="form-control" value="{{ room_number or '' }}" placeholder="e.g., Room 204" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description (Optional)</label>
+                <textarea id="description" name="description" class="form-control" rows="4" placeholder="Provide additional details about the issue...">{{ description or '' }}</textarea>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary">Submit Issue</button>
+                <a href="{{ url_for('routes.faculty_dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
     </div>
-    <br>
-    <div>
-        <label for="category">Category *</label><br>
-        <select id="category" name="category" required>
-            <option value="">-- Select Category --</option>
-            {% for cat in categories %}
-                <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <br>
-    <div>
-        <label for="room_number">Room Number *</label><br>
-        <input type="text" id="room_number" name="room_number" value="{{ room_number or '' }}" required>
-    </div>
-    <br>
-    <div>
-        <label for="description">Description</label><br>
-        <textarea id="description" name="description" rows="4" cols="50">{{ description or '' }}</textarea>
-    </div>
-    <br>
-    <div>
-        <button type="submit">Submit Issue</button>
-        <a href="{{ url_for('routes.faculty_dashboard') }}">Cancel</a>
-    </div>
-</form>
+</div>
 {% endblock %}

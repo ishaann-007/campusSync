@@ -118,8 +118,8 @@ class ManagementDashboardTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Total 4 issues (1 Submitted, 1 Assigned, 1 In Progress, 1 Resolved)
-        self.assertIn(b'Submitted</th>', response.data)
-        self.assertIn(b'Total Issues</th>', response.data)
+        self.assertIn(b'<div class="label">Submitted</div>', response.data)
+        self.assertIn(b'<div class="label">Total Issues</div>', response.data)
 
     def test_management_status_filtering(self):
         self.login('mgmt@test.com')

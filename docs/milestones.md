@@ -410,7 +410,8 @@ manipulation.
 
 # Milestone 9 --- UI & UX Polish
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete
+
 
 ### Goal
 
@@ -514,7 +515,7 @@ Do not sacrifice the core workflow to add optional features.
 [██████████] Milestone 6 — Staff Workflow       ✅
 [██████████] Milestone 7 — Management           ✅
 [██████████] Milestone 8 — Integration Testing  ✅
-[----------] Milestone 9 — UI Polish            ⬜
+[██████████] Milestone 9 — UI Polish            ✅
 [----------] Milestone 10 — Demo Preparation    ⬜
 ```
 

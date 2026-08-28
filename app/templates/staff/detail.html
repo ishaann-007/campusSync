@@ -3,37 +3,57 @@
 {% block title %}Manage Issue #{{ issue.id }} - CampusSync{% endblock %}
 
 {% block content %}
-<h2>Manage Issue (#{{ issue.id }})</h2>
+<div style="max-width: 800px; margin: 0 auto;">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2>Manage Issue (#{{ issue.id }})</h2>
+            <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
+        </div>
 
-<p><strong>Problem:</strong> {{ issue.problem }}</p>
-<p><strong>Category:</strong> {{ issue.category }}</p>
-<p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
-<p><strong>Room Number:</strong> {{ issue.room_number }}</p>
-<p><strong>Description:</strong> {{ issue.description or 'No description provided.' }}</p>
-<p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
-<p><strong>Status:</strong> <strong>{{ issue.status }}</strong></p>
-<p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-<p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'N/A' }}</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+                <p><strong>Problem:</strong> {{ issue.problem }}</p>
+                <p><strong>Category:</strong> {{ issue.category }}</p>
+                <p><strong>Room Number:</strong> {{ issue.room_number }}</p>
+                <p><strong>Department:</strong> {{ issue.department.name if issue.department else 'Unassigned' }}</p>
+            </div>
+            <div>
+                <p><strong>Submitted By:</strong> {{ issue.submitter.name }} ({{ issue.submitter.email }})</p>
+                <p><strong>Submitted At:</strong> {{ issue.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <p><strong>Resolved At:</strong> {{ issue.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if issue.resolved_at else 'N/A' }}</p>
+            </div>
+        </div>
 
-<hr>
+        <div class="form-group">
+            <label>Description:</label>
+            <div style="background: #f8fafc; padding: 1rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                {{ issue.description or 'No description provided.' }}
+            </div>
+        </div>
 
-<h3>Actions</h3>
+        <hr style="margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-color);">
 
-{% if issue.status == 'Assigned' %}
-    <form method="post" action="{{ url_for('routes.staff_issue_action', issue_id=issue.id) }}">
-        <input type="hidden" name="action" value="acknowledge">
-        <button type="submit">Acknowledge Issue (Set to In Progress)</button>
-    </form>
-{% elif issue.status == 'In Progress' %}
-    <form method="post" action="{{ url_for('routes.staff_issue_action', issue_id=issue.id) }}">
-        <input type="hidden" name="action" value="resolve">
-        <button type="submit">Mark as Resolved</button>
-    </form>
-{% elif issue.status == 'Resolved' %}
-    <p><em>This issue has been resolved and closed. No further workflow actions are available.</em></p>
-{% else %}
-    <p><em>No workflow actions available for status '{{ issue.status }}'.</em></p>
-{% endif %}
+        <h3>Workflow Actions</h3>
 
-<p><br><a href="{{ url_for('routes.staff_dashboard') }}">Back to Staff Dashboard</a></p>
+        {% if issue.status == 'Assigned' %}
+            <form method="post" action="{{ url_for('routes.staff_issue_action', issue_id=issue.id) }}">
+                <input type="hidden" name="action" value="acknowledge">
+                <button type="submit" class="btn btn-primary">Acknowledge Issue (Set to In Progress)</button>
+            </form>
+        {% elif issue.status == 'In Progress' %}
+            <form method="post" action="{{ url_for('routes.staff_issue_action', issue_id=issue.id) }}">
+                <input type="hidden" name="action" value="resolve">
+                <button type="submit" class="btn btn-primary" style="background-color: #166534;">Mark as Resolved</button>
+            </form>
+        {% elif issue.status == 'Resolved' %}
+            <p style="color: var(--text-muted);"><em>This issue has been resolved and closed. No further workflow actions are available.</em></p>
+        {% else %}
+            <p style="color: var(--text-muted);"><em>No workflow actions available for status '{{ issue.status }}'.</em></p>
+        {% endif %}
+
+        <div style="margin-top: 1.5rem;">
+            <a href="{{ url_for('routes.staff_dashboard') }}" class="btn btn-secondary">Back to Staff Dashboard</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
