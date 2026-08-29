@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
@@ -40,7 +40,7 @@ class Issue(db.Model):
     status = db.Column(db.String(20), nullable=False, default='Submitted')
     submitted_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     department_id = db.Column(db.Integer, db.ForeignKey('departments.id'), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     resolved_at = db.Column(db.DateTime, nullable=True)
 
     submitter = db.relationship('User', foreign_keys=[submitted_by], backref=db.backref('submitted_issues', lazy=True))
@@ -53,7 +53,7 @@ class Assignment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     issue_id = db.Column(db.Integer, db.ForeignKey('issues.id'), unique=True, nullable=False)
     staff_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    assigned_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    assigned_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
     issue = db.relationship('Issue', backref=db.backref('assignment', uselist=False))
     staff = db.relationship('User', foreign_keys=[staff_id], backref=db.backref('assignments', lazy=True))

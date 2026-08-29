@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 from app.models import Department, User, Issue, Assignment
 
@@ -93,7 +93,7 @@ def update_issue_status_by_staff(issue, action, staff_user):
         if issue.status != 'In Progress':
             return False, f"Cannot resolve issue with status '{issue.status}'."
         issue.status = 'Resolved'
-        issue.resolved_at = datetime.utcnow()
+        issue.resolved_at = datetime.now(timezone.utc)
         db.session.commit()
         return True, "Issue resolved successfully."
 

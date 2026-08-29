@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app import create_app, db
 from app.models import User, Department, Issue, Assignment
 
@@ -31,7 +31,7 @@ class IssueOrderingTestCase(unittest.TestCase):
             self.f_id = f.id
             self.s_id = s.id
 
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
 
             # Active Issues
             i1 = Issue(problem='Active Oldest (#1)', room_number='101', category='IT / Equipment', status='Submitted', submitted_by=self.f_id, created_at=now - timedelta(hours=5))
