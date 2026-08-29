@@ -32,7 +32,9 @@ class AuthTestCase(unittest.TestCase):
 
     def tearDown(self):
         with self.app.app_context():
+            db.session.remove()
             db.drop_all()
+            db.engine.dispose()
 
     def login(self, email, password):
         return self.client.post('/login', data=dict(
