@@ -150,11 +150,10 @@ The project dependencies are listed in `requirements.txt`.
 ## 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/ishaann-007/campusSync>
 cd CampusSync
 ```
 
-Replace `<repository-url>` with the actual GitHub repository URL.
 
 ## 2. Create a virtual environment
 
