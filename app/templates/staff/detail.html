@@ -29,7 +29,7 @@
 
         <div class="detail-section">
             <h4>Description</h4>
-            <div style="background: var(--elevated-bg); padding: 0.85rem 1rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.875rem;">
+            <div style="background: var(--surface-elevated); padding: 0.85rem 1rem; border-radius: 6px; border: 1px solid var(--border-subtle); font-size: 0.875rem;">
                 {{ issue.description or 'No additional description provided.' }}
             </div>
         </div>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class="detail-section" style="padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <div class="detail-section" style="padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
             <h4>Workflow Action</h4>
 
             {% if issue.status == 'Assigned' %}

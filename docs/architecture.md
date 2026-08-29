@@ -1,68 +1,93 @@
-# CampusSync --- Technical Architecture
+# CampusSync — Technical Architecture
 
 > **Status:** Final MVP architecture
+>
+> **Project:** BuildSprint 2026
+>
+> This document describes the technical architecture of the implemented CampusSync MVP. It is intentionally limited to the functionality present in the project rather than describing a future production system.
 
-## 1. Overview
+---
 
-CampusSync is a small monolithic web application using a server-rendered
-frontend, Flask application layer, Flask-SQLAlchemy ORM, and SQLite
-database.
+## 1. Purpose
 
-``` text
+CampusSync is a small server-rendered web application for coordinating academic-institution operational issues.
+
+The architecture translates the product decisions documented in `research.md` into the actual implementation.
+
+The MVP deliberately favors:
+
+- a small technology stack
+- server-side rendering
+- a relational database
+- explicit role-based access
+- deterministic routing
+- deterministic automatic assignment
+- simple service-layer business logic
+- automated tests around the core workflow
+
+---
+
+## 2. System Architecture
+
+CampusSync uses a monolithic Flask application.
+
+```text
 User Browser
-     │
-     ▼
-Jinja2 + HTML/CSS/JavaScript
-     │
-     ▼
+     |
+     v
+Jinja2 Templates
+HTML / CSS / JavaScript
+     |
+     v
 Flask Application
-     │
-     ├── Authentication & Authorization
-     ├── Issue Management
-     ├── Routing
-     ├── Staff Assignment
-     └── Workflow Operations
-     │
-     ▼
-Flask-SQLAlchemy
-     │
-     ▼
-SQLite
+     |
+     +----------------------+
+     |                      |
+     v                      v
+Authentication        Application Routes
+                           |
+                           v
+                      Service Layer
+                    /       |        \
+                   /        |         \
+              Routing   Assignment   Workflow
+                   \        |         /
+                    \       |        /
+                           v
+                    SQLAlchemy ORM
+                           |
+                           v
+                     SQLite Database
 ```
 
-The architecture deliberately avoids a separate frontend application,
-microservices, multiple databases, and unnecessary infrastructure.
+The application uses a conventional request/response model. There is no separate frontend application, REST API layer, microservice architecture, or external database service in the MVP.
 
-## 2. Technology Stack
+---
 
-  -----------------------------------------------------------------------
-  Layer                   Technology              Purpose
-  ----------------------- ----------------------- -----------------------
-  Backend                 Python + Flask          Web application and
-                                                  request handling
+## 3. Technology Stack
 
-  ORM                     Flask-SQLAlchemy        Database models and
-                                                  access
+| Layer | Technology | Purpose |
+|---|---|---|
+| Backend | Python + Flask | Web application and request handling |
+| ORM | Flask-SQLAlchemy | Database access and ORM models |
+| Database | SQLite | Persistent relational storage |
+| Templates | Jinja2 | Server-rendered HTML |
+| Frontend | HTML, CSS, JavaScript | Interface and lightweight client-side behavior |
+| Authentication | Flask sessions + Werkzeug password hashing | Login and protected access |
+| Version control | Git + GitHub | Source control |
 
-  Database                SQLite                  Persistent relational
-                                                  storage
+The declared Python dependencies are:
 
-  Templates               Jinja2                  Server-rendered pages
+```text
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+```
 
-  Frontend                HTML/CSS/JavaScript     User interface and
-                                                  lightweight client
-                                                  behavior
+---
 
-  Authentication          Flask sessions +        Authentication and
-                          Werkzeug password       protected access
-                          hashing                 
+## 4. Repository Structure
 
-  Version control         Git + GitHub            Source control
-  -----------------------------------------------------------------------
-
-## 3. Repository Structure
-
-``` text
+```text
 CampusSync/
 ├── app/
 │   ├── __init__.py
@@ -74,7 +99,9 @@ CampusSync/
 │   ├── templates/
 │   └── static/
 ├── docs/
-├── instance/
+│   ├── architecture.md
+│   ├── milestones.md
+│   └── research.md
 ├── tests/
 ├── requirements.txt
 ├── run.py
@@ -82,33 +109,84 @@ CampusSync/
 └── README.md
 ```
 
--   `app/__init__.py` --- application setup and database initialization.
--   `app/auth.py` --- authentication helpers and role access control.
--   `app/auth_routes.py` --- login/logout handling.
--   `app/models.py` --- SQLAlchemy ORM models.
--   `app/routes.py` --- role-specific request handling and application
-    routes.
--   `app/services.py` --- routing, assignment, workload, workflow, and
-    Management data logic.
--   `app/templates/` --- Jinja2 views.
--   `app/static/` --- CSS and JavaScript.
--   `tests/` --- automated tests.
--   `seed.py` --- pre-created development/demo users and departments.
--   `run.py` --- application entry point.
--   `instance/` --- local SQLite database storage.
+### Module responsibilities
 
-## 4. Data Model
+#### `app/__init__.py`
 
-The MVP uses four core models:
+Creates and configures the Flask application and initializes the SQLAlchemy database extension.
 
-1.  `User`
-2.  `Department`
-3.  `Issue`
-4.  `Assignment`
+#### `app/auth.py`
 
-### User
+Contains authentication-related helpers and role-based access control.
 
-``` text
+#### `app/auth_routes.py`
+
+Contains the login and logout routes.
+
+#### `app/models.py`
+
+Contains the SQLAlchemy models:
+
+- `User`
+- `Department`
+- `Issue`
+- `Assignment`
+
+#### `app/routes.py`
+
+Contains application routes for:
+
+- Faculty
+- Staff
+- Management
+- issue submission
+- issue details
+- Staff workflow actions
+
+#### `app/services.py`
+
+Contains business logic for:
+
+- category-to-department routing
+- automatic Staff assignment
+- active workload calculation
+- Staff status transitions
+- Management dashboard data
+
+#### `app/templates/`
+
+Contains Jinja2 templates, including shared and role-specific views.
+
+#### `app/static/`
+
+Contains CSS and JavaScript assets.
+
+#### `tests/`
+
+Contains automated tests for authentication, routing, assignment, workflow, access control, ordering, Management functionality, and integration behavior.
+
+#### `seed.py`
+
+Creates the predefined departments and demo users required for the MVP.
+
+#### `run.py`
+
+Application entry point for local execution.
+
+---
+
+## 5. Data Model
+
+The MVP uses four core database models:
+
+1. `User`
+2. `Department`
+3. `Issue`
+4. `Assignment`
+
+### 5.1 User
+
+```text
 User
 ├── id
 ├── name
@@ -118,19 +196,34 @@ User
 └── department_id
 ```
 
-Roles are `faculty`, `staff`, and `management`.
+Roles are:
 
-### Department
+- `faculty`
+- `staff`
+- `management`
 
-``` text
+Staff users may be associated with a Department through `department_id`.
+
+Passwords are not stored as plaintext. `set_password()` stores a Werkzeug-generated password hash, and `check_password()` verifies submitted passwords against the stored hash.
+
+### 5.2 Department
+
+```text
 Department
 ├── id
 └── name
 ```
 
-### Issue
+The seeded departments are:
 
-``` text
+- IT Department
+- Facilities Department
+- Academic Administration
+- General Administration
+
+### 5.3 Issue
+
+```text
 Issue
 ├── id
 ├── problem
@@ -144,9 +237,24 @@ Issue
 └── resolved_at
 ```
 
-### Assignment
+Faculty supplies:
 
-``` text
+- problem
+- description
+- room number
+- category
+
+The application determines:
+
+- submitting Faculty user
+- responsible Department
+- status
+- submission timestamp
+- resolution timestamp
+
+### 5.4 Assignment
+
+```text
 Assignment
 ├── id
 ├── issue_id
@@ -154,180 +262,532 @@ Assignment
 └── assigned_at
 ```
 
-The MVP stores one current Assignment per Issue.
+`issue_id` is unique, so an Issue can have only one current Assignment in the MVP.
 
-## 5. Relationships
+Assignment history and reassignment are intentionally not modeled.
 
-``` text
-Faculty User
-     │
-     │ submits
-     ▼
-   Issue
-     │
-     │ routed to
-     ▼
+---
+
+## 6. Entity Relationships
+
+```text
+User (Faculty)
+      |
+      | submitted_by
+      v
+    Issue
+      |
+      | department_id
+      v
  Department
-     │
-     │ contains eligible Staff
-     ▼
- Staff User
+      ^
+      |
+      | department_id
+User (Staff)
 
 Issue
-  │
-  │ has one current Assignment
-  ▼
+  |
+  | issue_id
+  v
 Assignment
-  │
-  ▼
-Staff User
+  |
+  | staff_id
+  v
+User (Staff)
 ```
 
-## 6. Authentication and Authorization
+The important relationships are:
 
-Users are pre-created for the MVP; there is no public registration.
+- A Faculty User can submit many Issues.
+- A Staff User belongs to a Department.
+- An Issue belongs to the Faculty member who submitted it.
+- An Issue is routed to a Department.
+- An Issue has at most one current Assignment.
+- An Assignment points to a Staff User.
 
-Flask sessions maintain authenticated user identity. Werkzeug is used
-for password hashing.
+---
 
-Faculty can submit and view their own issues. Staff can view and operate
-on issues assigned to them. Management can view institution-wide issues
-and filter them, but does not modify the workflow.
+## 7. Authentication and Authorization
 
-Cross-role and data-isolation checks are covered by tests.
+Users are pre-created for the MVP. There is no public registration flow.
 
-## 7. Routing
+The login route:
 
-Routing is deterministic and category-based:
+1. receives an email and password;
+2. finds the corresponding User;
+3. verifies the password hash;
+4. clears the existing session;
+5. stores the authenticated user's ID in the Flask session;
+6. redirects the user according to their role.
 
-  Category                 Department
-  ------------------------ -------------------------
-  IT / Equipment           IT Department
-  Facilities / Classroom   Facilities Department
-  Academic / Schedule      Academic Administration
-  Miscellaneous            General Administration
+The logout route clears the session and redirects to the login page.
 
-The resulting Department is stored on the Issue.
+Role restrictions are enforced with the `role_required` access-control decorator.
 
-## 8. Automatic Assignment
+### Faculty access
 
-Eligible Staff are restricted to Staff in the responsible Department.
+Faculty can:
 
-Active workload consists of Issues with status `Assigned` or
-`In Progress`.
+- access the Faculty dashboard
+- submit Issues
+- view their own Issue details
+- track their Issues
 
-The Staff member with the lowest active workload is selected. Equal
-workloads use alphabetical Staff name as the deterministic tie-breaker.
+Faculty cannot access Staff or Management functionality.
 
-If there is no eligible Staff:
+### Staff access
 
-``` text
-No Assignment
-     ↓
-Issue remains Submitted
-     ↓
-Management can see it
+Staff can:
+
+- access the Staff dashboard
+- view Issues assigned to themselves
+- view their assigned Issue details
+- acknowledge assigned Issues
+- resolve Issues that are In Progress
+
+Staff cannot access Management functionality or operate on Issues assigned to another Staff member.
+
+### Management access
+
+Management can:
+
+- access the Management dashboard
+- view Issues across departments
+- view Issue details
+- view summary counts
+- filter Issues
+
+Management does not modify the Issue workflow in the MVP.
+
+---
+
+## 8. Issue Submission and Routing Flow
+
+A Faculty submission follows this sequence:
+
+```text
+Faculty submits form
+        |
+        v
+Validate required fields
+        |
+        v
+Validate category
+        |
+        v
+Determine Department
+        |
+        v
+Create Issue with Submitted status
+        |
+        v
+Attempt automatic Staff assignment
+        |
+        +----------------------+
+        |                      |
+ Eligible Staff           No eligible Staff
+        |                      |
+        v                      v
+Create Assignment        Keep Submitted
+Set status Assigned      No Assignment
 ```
 
-Manual selection and reassignment are outside the MVP.
+The Department is not selected manually by Faculty.
 
-## 9. Issue Workflow
+---
 
-``` text
+## 9. Deterministic Department Routing
+
+The application maintains a predefined category list:
+
+```text
+IT / Equipment
+Facilities / Classroom
+Academic / Schedule
+Miscellaneous
+```
+
+The routing service maps these categories to:
+
+| Category | Department |
+|---|---|
+| IT / Equipment | IT Department |
+| Facilities / Classroom | Facilities Department |
+| Academic / Schedule | Academic Administration |
+| Miscellaneous | General Administration |
+
+The resulting Department ID is stored on the Issue.
+
+An invalid category is rejected during submission.
+
+---
+
+## 10. Automatic Staff Assignment
+
+After routing, the assignment service identifies Staff belonging to the responsible Department.
+
+Only Staff in that Department are eligible.
+
+### Active workload
+
+For each eligible Staff member, active workload is the number of their assigned Issues whose status is:
+
+- `Assigned`
+- `In Progress`
+
+`Resolved` Issues are excluded.
+
+### Selection algorithm
+
+Eligible Staff are sorted by:
+
+1. active workload ascending
+2. Staff name ascending
+
+The first Staff member is selected.
+
+Therefore:
+
+```text
+lowest active workload
+        +
+alphabetical name as tie-breaker
+        =
+selected Staff
+```
+
+A new `Assignment` is created and the Issue status becomes `Assigned`.
+
+### No eligible Staff
+
+If no eligible Staff member exists:
+
+- no Assignment is created;
+- the Issue remains `Submitted`.
+
+This behavior is intentional and is covered by automated tests.
+
+---
+
+## 11. Issue Status Workflow
+
+The implemented lifecycle is:
+
+```text
 Submitted
-    ↓
+    |
+    v
 Assigned
-    ↓
+    |
+    v
 In Progress
-    ↓
+    |
+    v
 Resolved
 ```
 
-Allowed transitions:
+The transitions are:
 
-  Current       Trigger                           Next
-  ------------- --------------------------------- -------------
-  Submitted     Successful automatic assignment   Assigned
-  Assigned      Staff acknowledgement             In Progress
-  In Progress   Staff resolution                  Resolved
+| Current status | Action | Result |
+|---|---|---|
+| `Submitted` | Successful automatic assignment | `Assigned` |
+| `Assigned` | Staff acknowledges | `In Progress` |
+| `In Progress` | Staff resolves | `Resolved` |
 
-When resolved, `resolved_at` is recorded. Resolved issues cannot be
-reopened.
+Staff actions are validated against both:
 
-## 10. Interface Architecture
+- the Staff user's identity
+- the current Issue status
 
-The application uses shared layout elements and role-specific
-dashboards.
+When an Issue becomes `Resolved`, `resolved_at` is set to the current UTC timestamp.
 
-Faculty: - submit issues, - view their own issues, - track status.
+Resolved Issues cannot be reopened.
 
-Staff: - view assigned work, - acknowledge, - resolve.
+---
 
-Management: - view institution-wide issues, - view summary counts, -
-filter by status, Department, and category, - inspect read-only details.
+## 12. Role-Specific Application Flows
 
-The interface supports light/dark themes and responsive layouts. There
-is no separate mobile application.
+### Faculty
 
-## 11. Management Data
-
-Management receives institution-wide visibility and summary counts for:
-
--   Submitted
--   Assigned
--   In Progress
--   Resolved
--   Total Issues
-
-The Management dashboard supports filtering by status, Department, and
-category.
-
-## 12. Testing
-
-The project uses Python `unittest`.
-
-Tests cover foundation behavior, authentication, Faculty issue
-submission, routing, assignment, Staff workflow, Management dashboard
-behavior, ordering, and end-to-end integration.
-
-Run:
-
-``` bash
-python -m unittest discover -s tests
+```text
+Login
+  |
+  v
+Faculty Dashboard
+  |
+  +--> Submit Issue
+  |
+  +--> View Own Issues
+             |
+             v
+        Issue Details
 ```
 
-## 13. Deliberate Architectural Limitations
+Faculty Issue details are accessed through the dedicated Faculty Issue detail route.
 
-The MVP does not include:
+### Staff
 
--   assignment history,
--   manual Staff selection,
--   manual reassignment,
--   Staff comments/chat,
--   escalation workflows,
--   reopening,
--   notifications,
--   advanced analytics,
--   AI routing,
--   complex workforce optimization,
--   separate mobile application.
+```text
+Login
+  |
+  v
+Staff Dashboard
+  |
+  v
+Assigned Issues
+  |
+  v
+Issue Details
+  |
+  +--> Acknowledge
+  |       |
+  |       v
+  |   In Progress
+  |
+  +--> Mark Resolved
+          |
+          v
+       Resolved
+```
 
-The current Assignment model represents the current assignment rather
-than a complete assignment history.
+### Management
 
-## 14. Architectural Principles
+```text
+Login
+  |
+  v
+Management Dashboard
+  |
+  +--> Summary Counts
+  |
+  +--> Filters
+  |
+  +--> Institution-wide Issue List
+  |
+  +--> Issue Details
+```
 
--   Keep the implementation simple.
--   Minimize infrastructure.
--   Separate responsibilities.
--   Avoid premature abstraction.
--   Preserve future flexibility where inexpensive.
--   Optimize for reliability.
--   Implement incrementally and verify each milestone.
+---
 
-## 15. Current Status
+## 13. Issue Ordering
 
-The MVP implementation is complete through Milestone 9.
+Faculty and Staff dashboards intentionally prioritize unresolved work.
 
-The remaining project work is final documentation verification, final
-testing/manual verification, and demonstration preparation.
+The implemented ordering is:
+
+1. non-Resolved Issues first;
+2. within each group, newest `created_at` first;
+3. Resolved Issues therefore appear after active Issues.
+
+The automated ordering tests verify this behavior for both Faculty and Staff dashboards.
+
+Management's filtered Issue list is ordered by newest `created_at` first.
+
+---
+
+## 14. Management Dashboard
+
+The Management service calculates institution-wide counts for:
+
+- Submitted
+- Assigned
+- In Progress
+- Resolved
+- Total
+
+Management can filter the Issue list by:
+
+- status
+- department
+- category
+
+The filters are combined when multiple filter values are supplied.
+
+Management remains read-only with respect to the Issue workflow.
+
+---
+
+## 15. Frontend Architecture
+
+The frontend is server-rendered with Jinja2.
+
+There is:
+
+- one shared base layout;
+- role-specific dashboard templates;
+- role-specific Issue detail templates;
+- a Faculty submission template;
+- shared CSS;
+- lightweight JavaScript.
+
+The frontend does not use React, Vue, Angular, or another separate frontend framework.
+
+The current implementation also includes a light/dark theme toggle and responsive layout behavior.
+
+The frontend is intentionally separate from business logic: routing, assignment, authorization, and workflow decisions remain server-side.
+
+---
+
+## 16. Security Boundaries
+
+The MVP enforces several important boundaries.
+
+### Authentication boundary
+
+Protected role routes require an authenticated session.
+
+### Role boundary
+
+Users cannot use routes belonging to another role.
+
+### Faculty data isolation
+
+A Faculty member can access only their own Issues.
+
+### Staff assignment isolation
+
+A Staff member can access and modify only Issues assigned to that Staff member.
+
+### Assignment integrity
+
+Faculty input cannot override the automatic Staff assignment.
+
+### Password handling
+
+Passwords are hashed using Werkzeug before storage.
+
+These boundaries are exercised by the automated test suite.
+
+---
+
+## 17. Testing Architecture
+
+The project uses Python's built-in `unittest` framework.
+
+The tests use isolated SQLite in-memory databases for application behavior tests.
+
+Important tested areas include:
+
+- password hashing
+- valid and invalid authentication
+- login/logout
+- unauthenticated access protection
+- role-based access control
+- Faculty data isolation
+- category routing
+- department-specific Staff eligibility
+- workload-based assignment
+- alphabetical tie-breaking
+- exclusion of Resolved Issues from workload
+- no-eligible-Staff behavior
+- Staff status transitions
+- invalid status actions
+- resolution timestamps
+- Faculty and Staff issue ordering
+- Management visibility and filtering
+- end-to-end workflow behavior
+
+The project currently reports **48 passing tests** across the completed MVP test suite.
+
+---
+
+## 18. Architecture Decisions
+
+| Decision | Implementation | Reason |
+|---|---|---|
+| Application style | Monolithic Flask application | Small and appropriate for MVP |
+| Backend | Flask | Simple server-side web framework |
+| ORM | Flask-SQLAlchemy | Provides relational models without unnecessary complexity |
+| Database | SQLite | Minimal setup for hackathon MVP |
+| Frontend | Jinja2 + HTML/CSS/JavaScript | Avoids a separate frontend application |
+| Authentication | Flask sessions | Simple session-based authentication |
+| Password storage | Werkzeug hashing | Passwords must not be stored in plaintext |
+| Roles | Faculty, Staff, Management | Matches MVP responsibilities |
+| Routing | Deterministic category mapping | Predictable behavior |
+| Assignment | Lowest active workload | Automatic assignment without complex optimization |
+| Tie-breaking | Alphabetical Staff name | Deterministic and reproducible |
+| Workload | Calculated from active Issues | Avoids redundant stored workload state |
+| Assignment history | Excluded | Outside MVP scope |
+| Reassignment | Excluded | Outside MVP scope |
+| Issue reopening | Excluded | Forward-only MVP lifecycle |
+| Management changes | Read-only | Management is an oversight role |
+
+---
+
+## 19. Known Architectural Limitations
+
+The MVP intentionally does not implement:
+
+- assignment history
+- manual reassignment
+- issue reopening
+- issue editing after submission
+- issue deletion
+- notifications
+- escalation workflows
+- Staff comments or chat
+- advanced analytics
+- AI-based routing
+- separate mobile application
+- complex workforce optimization
+- ERP or institutional-system integration
+
+These limitations are scope decisions rather than missing requirements for the current MVP.
+
+---
+
+## 20. Development and Maintenance Principles
+
+The architecture follows these principles:
+
+### Keep it simple
+
+Prefer the smallest implementation that satisfies the MVP.
+
+### Separate responsibilities
+
+Authentication, routing, assignment, workflow, and presentation have distinct responsibilities.
+
+### Avoid premature abstraction
+
+The project does not introduce infrastructure or abstractions for features that are outside the MVP.
+
+### Preserve deterministic behavior
+
+Routing, assignment, tie-breaking, and status transitions should remain predictable.
+
+### Protect the core workflow
+
+Changes to the frontend should not alter established backend workflow rules unless a verified defect requires it.
+
+### Test before changing scope
+
+Core behavior should remain covered by automated tests before additional features are considered.
+
+---
+
+## 21. Final Architecture Status
+
+**Status: Complete for the MVP.**
+
+The architecture now describes the implemented CampusSync system rather than an earlier planned version.
+
+The MVP consists of:
+
+```text
+Authentication
+      ↓
+Faculty Submission
+      ↓
+Department Routing
+      ↓
+Automatic Staff Assignment
+      ↓
+Staff Workflow
+      ↓
+Resolution
+      ↓
+Management Visibility
+```
+
+The implementation is intentionally small, deterministic, and suitable for the BuildSprint 2026 MVP scope.

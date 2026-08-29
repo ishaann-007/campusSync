@@ -13,7 +13,7 @@
 
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-        <h3>Submitted Requests</h3>
+        <h3>Your Requests</h3>
         <span class="text-muted" style="font-size: 0.825rem; font-weight: 500;">{{ issues|length }} total</span>
     </div>
 
@@ -23,11 +23,12 @@
             <div class="issue-item">
                 <div class="issue-item-main">
                     <div class="issue-item-header">
-                        <span class="issue-id">#{{ issue.id }}</span>
                         <h4 class="issue-title">{{ issue.problem }}</h4>
                         <span class="badge-status status-{{ issue.status|replace(' ', '-') }}">{{ issue.status }}</span>
                     </div>
                     <div class="issue-item-meta">
+                        <span>#{{ issue.id }}</span>
+                        <span>·</span>
                         <span>{{ issue.category }}</span>
                         <span>·</span>
                         <span>Room {{ issue.room_number }}</span>
@@ -52,3 +53,4 @@
     {% endif %}
 </div>
 {% endblock %}
+
