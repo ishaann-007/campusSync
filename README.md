@@ -150,7 +150,7 @@ The project dependencies are listed in `requirements.txt`.
 ## 1. Clone the repository
 
 ```bash
-git clone <https://github.com/ishaann-007/campusSync>
+git clone https://github.com/ishaann-007/campusSync
 cd CampusSync
 ```
 
